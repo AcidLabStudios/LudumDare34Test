@@ -1,27 +1,29 @@
 package com.jja.ld34;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
+import com.jja.ld34.screens.PlayScreen;
 
-public class Ld34Game extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	
+public class Ld34Game extends Game {
+
+    public static final int GAME_WIDTH = 1024;  // in px
+    public static final int GAME_HEIGHT = 768;  // in px
+	public static final float PIXELS_PER_METER = 100f;
+
+	private Screen currentScreen;
+
 	@Override
-	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+	public void create() {
+		setCurrentScreen(new PlayScreen());
 	}
 
 	@Override
-	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+	public void render() {
+		super.render();
+	}
+
+	public void setCurrentScreen(Screen currentScreen) {
+		this.currentScreen = currentScreen;
+		setScreen(currentScreen);
 	}
 }
