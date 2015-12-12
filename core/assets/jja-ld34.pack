@@ -1,0 +1,12 @@
+
+jja-ld34.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+bernie
+  rotate: false
+  xy: 1, 1
+  size: 384, 32
+  orig: 384, 32
+  offset: 0, 0
+  index: -1

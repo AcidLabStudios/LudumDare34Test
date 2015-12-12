@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -36,7 +37,10 @@ public class PlayScreen implements Screen {
 
     private Protagonist protagonist;
 
+    private TextureAtlas textureAtlas;
+
     public PlayScreen() {
+        this.textureAtlas = new TextureAtlas("jja-ld34.pack");
         this.spriteBatch = new SpriteBatch();
 
         this.camera = new OrthographicCamera();
@@ -68,7 +72,7 @@ public class PlayScreen implements Screen {
             body.createFixture(fixtureDef);
         }
 
-        this.protagonist = new Protagonist(world);
+        this.protagonist = new Protagonist(this.world, this.textureAtlas.findRegion("bernie"));
     }
 
     @Override
@@ -83,9 +87,13 @@ public class PlayScreen implements Screen {
     public void update(float delta) {
         handleInput(delta);
 
+        // update world
         this.world.step(1 / 60f, 6, 2);
 
-        this.camera.position.set(this.protagonist.getPosition(), 0);
+        // update protagonist
+        this.protagonist.update(delta);
+
+        this.camera.position.set(this.protagonist.getPosition(), 0);    // center camera on protagonist
         this.camera.update();
         this.mapRenderer.setView(this.camera);
     }
@@ -103,6 +111,12 @@ public class PlayScreen implements Screen {
         // render debug physics output
         // TODO: remove/comment this before release
         this.debugRenderer.render(world, camera.combined);
+
+        // render protagonist
+        this.spriteBatch.setProjectionMatrix(camera.combined);
+        this.spriteBatch.begin();
+        this.protagonist.draw(this.spriteBatch);
+        this.spriteBatch.end();
 
         // render HUD
         this.spriteBatch.setProjectionMatrix(this.hud.getStageCamera());
@@ -131,6 +145,10 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        this.map.dispose();
+        this.mapRenderer.dispose();
+        this.world.dispose();
+        this.debugRenderer.dispose();
+        this.hud.dispose();
     }
 }

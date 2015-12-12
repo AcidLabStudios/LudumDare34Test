@@ -2,14 +2,19 @@ package com.jja.ld34.sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.jja.ld34.Ld34Game;
 
-public class Protagonist {
+public class Protagonist extends Sprite {
 
     private static final float BASE_SIZE = 32f;
-    private static final float BASE_MOVEMENT_SPEED = 1.0f;
+    private static final float BASE_MOVEMENT_SPEED = 2.0f;
 
     private enum Direction {
         UP,
@@ -19,20 +24,29 @@ public class Protagonist {
         NONE
     }
 
+    private TextureRegion idleTextureRegion;
     private Body body;
-    private Direction currentDirection = Direction.NONE;
+    private Direction currentDirection;
 
-    public Protagonist(World world) {
+    public Protagonist(World world, TextureAtlas.AtlasRegion textureRegion) {
+        super(textureRegion);
+
+        this.idleTextureRegion = new TextureRegion(getTexture(), 0, 0, (int) getSize(), (int) getSize());
+        setBounds(0, 0, getSize() / Ld34Game.PIXELS_PER_METER, getSize() / Ld34Game.PIXELS_PER_METER);
+        setRegion(idleTextureRegion);
+
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(getSize() / Ld34Game.PIXELS_PER_METER, getSize() / Ld34Game.PIXELS_PER_METER);
+        bodyDef.position.set((getSize() / 2) / Ld34Game.PIXELS_PER_METER, (getSize() / 2) / Ld34Game.PIXELS_PER_METER);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         this.body = world.createBody(bodyDef);
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(getSize() / Ld34Game.PIXELS_PER_METER, getSize() / Ld34Game.PIXELS_PER_METER);
+        shape.setAsBox((getSize() / 2) / Ld34Game.PIXELS_PER_METER, (getSize() / 2) / Ld34Game.PIXELS_PER_METER);
         fixtureDef.shape = shape;
         this.body.createFixture(fixtureDef);
+
+        this.currentDirection = Direction.NONE;
     }
 
     public int getUpKey() {
@@ -81,6 +95,10 @@ public class Protagonist {
             this.body.applyLinearImpulse(new Vector2(getFriction(true), getFriction(false)), this.body.getWorldCenter(), true);
             currentDirection = Direction.NONE;
         }
+    }
+
+    public void update(float delta) {
+        setPosition(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2);
     }
 
     public Vector2 getPosition() {
