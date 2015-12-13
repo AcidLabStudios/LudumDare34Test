@@ -172,7 +172,9 @@ public class Player extends Entity {
     }
 
     @Override
-    public void onUpdate(float delta) {
+    public void update(float delta) {
+        super.update(delta);
+
         setPosition(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2);
         setRegion(getFrame(delta));
     }
@@ -190,7 +192,7 @@ public class Player extends Entity {
         fixtureDef.filter.categoryBits = filterCategoryBit;
         fixtureDef.filter.maskBits = filterMaskBit;
         fixtureDef.shape = shape;
-        this.body.createFixture(fixtureDef).setUserData(this.uniqueName);
+        this.body.createFixture(fixtureDef).setUserData(this.id);
 
         return body;
     }

@@ -14,7 +14,7 @@ public abstract class CollectibleEntity extends Entity implements InteractiveEnt
 
     @Override
     public void onCollision(short collidingFixtureFilterCategoryBits) {
-        if (isInitialized && FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.PROTAGONIST_BIT)) {
+        if (FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.PROTAGONIST_BIT)) {
             onCollected();
             this.shouldDestroy = true;
         }

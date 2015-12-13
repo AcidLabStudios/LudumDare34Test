@@ -126,7 +126,7 @@ public class PlayScreen implements Screen, ContactListener {
         // update world
         this.world.step(1 / 60f, 6, 2);
 
-        EntityManager.updateAllEntities(delta);
+        ObjectManager.updateAllObjects(delta);
 
         if (this.player != null) {
             // center camera on player
@@ -156,7 +156,7 @@ public class PlayScreen implements Screen, ContactListener {
         // render player
         this.spriteBatch.setProjectionMatrix(camera.combined);
         this.spriteBatch.begin();
-        EntityManager.drawAllEntities(this.spriteBatch);
+        ObjectManager.drawAllEntities(this.spriteBatch);
         this.spriteBatch.end();
 
         // render HUD

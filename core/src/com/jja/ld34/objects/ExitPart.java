@@ -22,7 +22,7 @@ public class ExitPart extends CollectibleEntity {
     public void onCollected() {
         //Increment to a count somewhere else keeping track of pieces gathered for that level,
         //and also update the display in the HUD to reflect the change.
-        Gdx.app.error("ExitPart", "Collected " + this.uniqueName);
+        Gdx.app.error("ExitPart", "Collected " + this.id);
         Hud.exitPartsCount ++;
     }
 
