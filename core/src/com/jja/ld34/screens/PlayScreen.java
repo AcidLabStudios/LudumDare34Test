@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -16,10 +18,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jja.ld34.Ld34Game;
 import com.jja.ld34.scenes.Hud;
-import com.jja.ld34.sprites.Collectible;
-import com.jja.ld34.sprites.EntityManager;
-import com.jja.ld34.sprites.ExitPart;
-import com.jja.ld34.sprites.Protagonist;
+import com.jja.ld34.sprites.*;
 
 public class PlayScreen implements Screen {
 
@@ -58,25 +57,53 @@ public class PlayScreen implements Screen {
         this.world = new World(new Vector2(0, 0), true);
         this.debugRenderer = new Box2DDebugRenderer();
 
-//        BodyDef bodyDef = new BodyDef();
-//        PolygonShape shape = new PolygonShape();
-//        FixtureDef fixtureDef = new FixtureDef();
-//        Body body;
-//
-//        for (MapObject object : this.map.getLayers().get(2).getObjects()) {
-//            com.badlogic.gdx.math.Rectangle rect = ((RectangleMapObject) object).getRectangle();
-//            bodyDef.type = BodyDef.BodyType.StaticBody;
-//            bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Ld34Game.PIXELS_PER_METER, (rect.getY() + rect.getHeight() / 2) / Ld34Game.PIXELS_PER_METER);
-//
-//            body = this.world.createBody(bodyDef);
-//            shape.setAsBox((rect.getWidth() / 2) / Ld34Game.PIXELS_PER_METER, (rect.getHeight() / 2) / Ld34Game.PIXELS_PER_METER);
-//            fixtureDef.shape = shape;
-//            body.createFixture(fixtureDef);
-//        }
+        populateWorld();
+    }
 
-        this.protagonist = new Protagonist("protagonist", this.world, new Vector2(-50, -50), this.textureAtlas.findRegion("bernie"));
+    public void populateWorld() {
+        if (this.map.getLayers().get("walls") != null) {
+            for (MapObject object : this.map.getLayers().get("walls").getObjects()) {
+                new EnvironmentEntity(this.world, ((RectangleMapObject) object).getRectangle());
+            }
+        } else {
+            Gdx.app.error("PlayScreen", "Map has no 'walls' layer!");
+        }
 
-        new ExitPart("exitPart1", this.world, new Vector2(50, 50), this.textureAtlas.findRegion("bernie"));
+        if (this.map.getLayers().get("exitparts") != null) {
+            int exitPartsCount = 0;
+            for (MapObject object : this.map.getLayers().get("exitparts").getObjects()) {
+                Rectangle bounds = ((RectangleMapObject) object).getRectangle();
+                new ExitPart("exitPart" + exitPartsCount, this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("bernie")); // TODO: pass an actual exit part texture region here
+                exitPartsCount++;
+            }
+        } else {
+            Gdx.app.error("PlayScreen", "Map has no 'exitparts' layer!");
+        }
+
+        if (this.map.getLayers().get("berniespawn") != null) {
+            MapObject protagonistSpawnMapObject = this.map.getLayers().get("berniespawn").getObjects().get(0);
+            if (protagonistSpawnMapObject != null) {
+                Rectangle bounds = ((RectangleMapObject) protagonistSpawnMapObject).getRectangle();
+                this.protagonist = new Protagonist("protagonist", this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("bernie"));
+            } else {
+                this.protagonist = new Protagonist("protagonist", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
+                Gdx.app.error("PlayScreen", "Unable to find spawnpoint for protagonist in 'berniespawn' layer of map! Fell back to spawning at (0, 0).");
+            }
+        } else {
+            this.protagonist = new Protagonist("protagonist", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
+            Gdx.app.error("PlayScreen", "Map has no 'berniespawn' layer! Fell back to spawning at (0, 0).");
+        }
+
+        if (this.map.getLayers().get("exit") != null) {
+            MapObject exitSpawnMapObject = this.map.getLayers().get("exit").getObjects().get(0);
+            if (exitSpawnMapObject != null) {
+                new GoalEntity(this.world, ((RectangleMapObject) exitSpawnMapObject).getRectangle());
+            } else {
+                Gdx.app.error("PlayScreen", "Unable to find exit in 'exit' layer of map! No exit was spawned; there is no exit to this map.");
+            }
+        } else {
+            Gdx.app.error("PlayScreen", "Map has no 'exit' layer!");
+        }
     }
 
     @Override
