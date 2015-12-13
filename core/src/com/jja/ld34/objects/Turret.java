@@ -1,7 +1,6 @@
 package com.jja.ld34.objects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Timer;
@@ -15,6 +14,10 @@ public class Turret extends Entity {
     
     private String fireDirection = "LEFT";
     private Timer gameStateTimer;
+    private Vector2 _initialPosition;
+    
+    private Texture myTexture = new Texture("battery/battery.png");
+    public static int bulletsFired = 0;
     
     public Turret (String uniqueName, World world, Vector2 initialPosition) {
         super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.ENEMY_BIT, FixtureFilterBit.ALL_FLAGS, new Texture("turret/turret.png"));
@@ -27,13 +30,17 @@ public class Turret extends Entity {
             }
         }, 2, 2);
         //Probably make him a solid object like terrain.
+
+        _initialPosition = initialPosition;
     }
     
     public void fireBullet() {
         //Fire a bullet based on fireDirection
         String localFireDirection;
         if(fireDirection == "LEFT") {
-            
+            //Spawn bullet and pass in "LEFT"
+            new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), "LEFT", myTexture);
+            bulletsFired ++;
         } else if(fireDirection == "RIGHT"){
             
         } else if(fireDirection == "UP") {
@@ -68,5 +75,9 @@ public class Turret extends Entity {
         this.body.createFixture(fixtureDef).setUserData(this);
 
         return this.body;
+    }
+
+    public Vector2 getPosition() {
+        return this.body.getPosition();
     }
 }

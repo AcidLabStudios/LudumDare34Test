@@ -105,9 +105,11 @@ public class PlayScreen implements Screen, ContactListener {
         
         //spawn turrets
         if (this.map.getLayers().get("turretspawn") != null) {
+            int turretCount = 0;
             for (MapObject object : this.map.getLayers().get("turretspawn").getObjects()) {
                 Rectangle bounds = ((RectangleMapObject) object).getRectangle();
-                new Turret("turretspawn", this.world, new Vector2(bounds.x, bounds.y));
+                new Turret("turretspawn" + turretCount, this.world, new Vector2(bounds.x, bounds.y));
+                turretCount++;
             }
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'turretspawn' layer!");
