@@ -17,7 +17,7 @@ public class GoalEntity extends EnvironmentEntity implements InteractiveEntity {
         // if they have, go to the next level;
         // if they haven't, display a message that they haven't or play a sound or something to indicate they cannot proceed to the next level yet
         
-        if(Hud.exitPartsCount == 1) {
+        if(Hud.exitPartsCount == 5) {
             //TODO
             Gdx.app.error("GoalEntity", "You win!");
         }
