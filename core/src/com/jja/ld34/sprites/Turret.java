@@ -7,10 +7,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by andrewstrauch on 12/12/15.
- */
-public class Turret extends Sprite{
+public class Turret extends Sprite {
+
     private int fireInterval = 3000;
     private String fireDirection;
     

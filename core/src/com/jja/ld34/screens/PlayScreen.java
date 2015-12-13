@@ -6,17 +6,19 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jja.ld34.Ld34Game;
 import com.jja.ld34.scenes.Hud;
+import com.jja.ld34.sprites.Collectible;
+import com.jja.ld34.sprites.EntityManager;
+import com.jja.ld34.sprites.ExitPart;
 import com.jja.ld34.sprites.Protagonist;
 
 public class PlayScreen implements Screen {
@@ -56,23 +58,25 @@ public class PlayScreen implements Screen {
         this.world = new World(new Vector2(0, 0), true);
         this.debugRenderer = new Box2DDebugRenderer();
 
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fixtureDef = new FixtureDef();
-        Body body;
+//        BodyDef bodyDef = new BodyDef();
+//        PolygonShape shape = new PolygonShape();
+//        FixtureDef fixtureDef = new FixtureDef();
+//        Body body;
+//
+//        for (MapObject object : this.map.getLayers().get(2).getObjects()) {
+//            com.badlogic.gdx.math.Rectangle rect = ((RectangleMapObject) object).getRectangle();
+//            bodyDef.type = BodyDef.BodyType.StaticBody;
+//            bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Ld34Game.PIXELS_PER_METER, (rect.getY() + rect.getHeight() / 2) / Ld34Game.PIXELS_PER_METER);
+//
+//            body = this.world.createBody(bodyDef);
+//            shape.setAsBox((rect.getWidth() / 2) / Ld34Game.PIXELS_PER_METER, (rect.getHeight() / 2) / Ld34Game.PIXELS_PER_METER);
+//            fixtureDef.shape = shape;
+//            body.createFixture(fixtureDef);
+//        }
 
-        for (MapObject object : this.map.getLayers().get(2).getObjects()) {
-            com.badlogic.gdx.math.Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Ld34Game.PIXELS_PER_METER, (rect.getY() + rect.getHeight() / 2) / Ld34Game.PIXELS_PER_METER);
+        this.protagonist = new Protagonist("protagonist", this.world, new Vector2(-50, -50), this.textureAtlas.findRegion("bernie"));
 
-            body = this.world.createBody(bodyDef);
-            shape.setAsBox((rect.getWidth() / 2) / Ld34Game.PIXELS_PER_METER, (rect.getHeight() / 2) / Ld34Game.PIXELS_PER_METER);
-            fixtureDef.shape = shape;
-            body.createFixture(fixtureDef);
-        }
-
-        this.protagonist = new Protagonist(this.world, this.textureAtlas.findRegion("bernie"));
+        new ExitPart("exitPart1", this.world, new Vector2(50, 50), this.textureAtlas.findRegion("bernie"));
     }
 
     @Override
@@ -90,8 +94,7 @@ public class PlayScreen implements Screen {
         // update world
         this.world.step(1 / 60f, 6, 2);
 
-        // update protagonist
-        this.protagonist.update(delta);
+        EntityManager.updateAllEntities(delta);
 
         this.camera.position.set(this.protagonist.getPosition(), 0);    // center camera on protagonist
         this.camera.update();
@@ -115,7 +118,7 @@ public class PlayScreen implements Screen {
         // render protagonist
         this.spriteBatch.setProjectionMatrix(camera.combined);
         this.spriteBatch.begin();
-        this.protagonist.draw(this.spriteBatch);
+        EntityManager.drawAllEntities(this.spriteBatch);
         this.spriteBatch.end();
 
         // render HUD
