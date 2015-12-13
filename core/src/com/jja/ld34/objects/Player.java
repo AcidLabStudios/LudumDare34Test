@@ -197,6 +197,10 @@ public class Player extends Entity {
         return body;
     }
 
+    public void kill() {
+        this.shouldDestroy = true;
+    }
+
     public Vector2 getPosition() {
         return this.body.getPosition();
     }

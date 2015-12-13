@@ -16,6 +16,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jja.ld34.Ld34Game;
@@ -41,6 +42,7 @@ public class PlayScreen implements Screen, ContactListener {
     private Player player;
 
     private TextureAtlas textureAtlas;
+    private Timer gameStateTimer;
 
     public PlayScreen() {
         this.textureAtlas = new TextureAtlas("jja-ld34.pack");
@@ -61,6 +63,13 @@ public class PlayScreen implements Screen, ContactListener {
         this.debugRenderer = new Box2DDebugRenderer();
 
         populateWorld();
+        this.gameStateTimer = new Timer();
+        this.gameStateTimer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                updateGameState();
+            }
+        }, 1, 1);
     }
 
     public void populateWorld() {
@@ -83,19 +92,7 @@ public class PlayScreen implements Screen, ContactListener {
             Gdx.app.error("PlayScreen", "Map has no 'exitparts' layer!");
         }
 
-        if (this.map.getLayers().get("berniespawn") != null) {
-            MapObject protagonistSpawnMapObject = this.map.getLayers().get("berniespawn").getObjects().get(0);
-            if (protagonistSpawnMapObject != null) {
-                Rectangle bounds = ((RectangleMapObject) protagonistSpawnMapObject).getRectangle();
-                this.player = new Player("player", this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("bernie"));
-            } else {
-                this.player = new Player("player", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
-                Gdx.app.error("PlayScreen", "Unable to find spawnpoint for player in 'berniespawn' layer of map! Fell back to spawning at (0, 0).");
-            }
-        } else {
-            this.player = new Player("player", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
-            Gdx.app.error("PlayScreen", "Map has no 'berniespawn' layer! Fell back to spawning at (0, 0).");
-        }
+        spawnPlayer();
 
         if (this.map.getLayers().get("exit") != null) {
             MapObject exitSpawnMapObject = this.map.getLayers().get("exit").getObjects().get(0);
@@ -109,14 +106,39 @@ public class PlayScreen implements Screen, ContactListener {
         }
     }
 
-    @Override
-    public void show() {
-
+    public void spawnPlayer() {
+        if (this.map.getLayers().get("berniespawn") != null) {
+            MapObject protagonistSpawnMapObject = this.map.getLayers().get("berniespawn").getObjects().get(0);
+            if (protagonistSpawnMapObject != null) {
+                Rectangle bounds = ((RectangleMapObject) protagonistSpawnMapObject).getRectangle();
+                this.player = new Player("player", this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("bernie"));
+            } else {
+                this.player = new Player("player", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
+                Gdx.app.error("PlayScreen", "Unable to find spawnpoint for player in 'berniespawn' layer of map! Fell back to spawning at (0, 0).");
+            }
+        } else {
+            this.player = new Player("player", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
+            Gdx.app.error("PlayScreen", "Map has no 'berniespawn' layer! Fell back to spawning at (0, 0).");
+        }
     }
 
     public void handleInput(float delta) {
         if (this.player != null) {
             this.player.handleInput();
+        }
+    }
+
+    public void updateGameState() {
+        if (Hud.timeLeft > 0) {
+            Hud.timeLeft--;
+        } else {
+            this.player.kill();
+        }
+
+        if (this.player.isDestroyed()) {
+            // if there isn't currently a player on the field and there's still time on the clock, spawn a new player
+            spawnPlayer();
+            Hud.timeLeft = 5;
         }
     }
 
@@ -200,17 +222,22 @@ public class PlayScreen implements Screen, ContactListener {
 
     @Override
     public void pause() {
-
+        this.gameStateTimer.stop();
     }
 
     @Override
     public void resume() {
-
+        this.gameStateTimer.start();
     }
 
     @Override
     public void hide() {
+        this.gameStateTimer.stop();
+    }
 
+    @Override
+    public void show() {
+        this.gameStateTimer.start();
     }
 
     @Override

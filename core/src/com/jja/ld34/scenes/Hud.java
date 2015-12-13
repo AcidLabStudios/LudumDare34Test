@@ -15,34 +15,32 @@ import com.jja.ld34.Ld34Game;
 
 public class Hud implements Disposable {
 
+    public static Integer timeLeft = 5;
     public static Integer exitPartsCount = 0;
     
     private Stage stage;
     private Viewport viewport;
-    private Integer time;
 
-    private Label timeLabel;
+    private Label timeLeftLabel;
     private Label exitPartsLabel;
 
     public Hud(SpriteBatch spriteBatch) {
         this.viewport = new FitViewport(Ld34Game.GAME_WIDTH, Ld34Game.GAME_HEIGHT, new OrthographicCamera());
         this.stage = new Stage(this.viewport, spriteBatch);
 
-        this.time = 0;
-
         Table table = new Table();
         table.top();
         table.setFillParent(true);
 
-        this.timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        this.timeLeftLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         this.exitPartsLabel = new Label("PARTS", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-        table.add(this.timeLabel).expandX().padTop(10);
+        table.add(this.timeLeftLabel).expandX().padTop(10);
         table.add(this.exitPartsLabel).expandX().padTop(10);
         table.row();
         
-        this.timeLabel = new Label(this.time.toString(), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        table.add(this.timeLabel).expandX();
+        this.timeLeftLabel = new Label(timeLeft.toString(), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        table.add(this.timeLeftLabel).expandX();
         this.exitPartsLabel = new Label(exitPartsCount.toString(), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         table.add(this.exitPartsLabel).expandX();
 
@@ -63,6 +61,7 @@ public class Hud implements Disposable {
     }
     
     public void update() {
-        this.exitPartsLabel.setText(exitPartsCount.toString());
+        this.timeLeftLabel.setText(this.timeLeft.toString());
+        this.exitPartsLabel.setText(this.exitPartsCount.toString());
     }
 }
