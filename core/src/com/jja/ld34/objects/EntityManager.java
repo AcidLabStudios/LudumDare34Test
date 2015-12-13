@@ -1,4 +1,4 @@
-package com.jja.ld34.sprites;
+package com.jja.ld34.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

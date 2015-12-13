@@ -1,4 +1,4 @@
-package com.jja.ld34.sprites;
+package com.jja.ld34.objects;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.jja.ld34.Ld34Game;
 
-public abstract class Entity extends Sprite {
+public abstract class Entity extends Sprite implements Object {
 
     protected String uniqueName;
     protected World world;

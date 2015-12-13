@@ -1,4 +1,4 @@
-package com.jja.ld34.sprites;
+package com.jja.ld34.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
 import com.jja.ld34.screens.PlayScreen;
 
 import java.util.HashMap;
 
-public class Protagonist extends Entity implements ContactListener {
+public class Player extends Entity {
 
     private static final float BASE_SIZE = 32f;
     private static final float BASE_MOVEMENT_SPEED = 2f;
@@ -40,8 +41,8 @@ public class Protagonist extends Entity implements ContactListener {
     private HashMap<Direction, Animation> movingAnimationMap;
     private float animationTimer;
 
-    public Protagonist(String uniqueName, World world, Vector2 initialPosition, TextureAtlas.AtlasRegion textureRegion) {
-        super(uniqueName, world, initialPosition, BASE_SIZE, Ld34Game.PROTAGONIST_BIT, Ld34Game.ALL_FLAGS, textureRegion);
+    public Player(String uniqueName, World world, Vector2 initialPosition, TextureAtlas.AtlasRegion textureRegion) {
+        super(uniqueName, world, initialPosition, BASE_SIZE, FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, textureRegion);
 
         this.currentDirection = this.previousDirection = Direction.DOWN;
         this.currentState = this.previousState = State.IDLING;
@@ -79,8 +80,6 @@ public class Protagonist extends Entity implements ContactListener {
         this.movingAnimationMap.put(Direction.UP, new Animation(getAnimationFramerate(), frames));
 
         setRegion(this.idlingTextureRegionMap.get(this.currentDirection));
-
-        world.setContactListener(this);
     }
 
     public int getUpKey() {
@@ -194,35 +193,6 @@ public class Protagonist extends Entity implements ContactListener {
         this.body.createFixture(fixtureDef).setUserData(this.uniqueName);
 
         return body;
-    }
-
-    @Override
-    public void beginContact(Contact contact) {
-        Fixture fixtureA = contact.getFixtureA();
-        Fixture fixtureB = contact.getFixtureB();
-
-        if (fixtureA.getUserData() == "protagonist" || fixtureB.getUserData() == "protagonist") {
-            Fixture protagonistFixture = (fixtureA.getUserData() == "protagonist") ? fixtureA : fixtureB;
-            Fixture objectFixture = (protagonistFixture == fixtureA) ? fixtureB : fixtureA;
-            if (objectFixture.getUserData() instanceof InteractiveEntity) {
-                ((InteractiveEntity) objectFixture.getUserData()).onCollision();
-            }
-        }
-    }
-
-    @Override
-    public void endContact(Contact contact) {
-
-    }
-
-    @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {
-
-    }
-
-    @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-
     }
 
     public Vector2 getPosition() {

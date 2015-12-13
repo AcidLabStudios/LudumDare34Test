@@ -15,15 +15,14 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jja.ld34.Ld34Game;
 import com.jja.ld34.scenes.Hud;
-import com.jja.ld34.sprites.*;
+import com.jja.ld34.objects.*;
 
-public class PlayScreen implements Screen {
+public class PlayScreen implements Screen, ContactListener {
 
     private SpriteBatch spriteBatch;
 
@@ -39,7 +38,7 @@ public class PlayScreen implements Screen {
     private World world;
     private Box2DDebugRenderer debugRenderer;
 
-    private Protagonist protagonist;
+    private Player player;
 
     private TextureAtlas textureAtlas;
 
@@ -58,6 +57,7 @@ public class PlayScreen implements Screen {
         this.camera.position.set(this.viewport.getWorldWidth() / 2, this.viewport.getWorldHeight() / 2, 0);
 
         this.world = new World(new Vector2(0, 0), true);
+        this.world.setContactListener(this);
         this.debugRenderer = new Box2DDebugRenderer();
 
         populateWorld();
@@ -66,7 +66,7 @@ public class PlayScreen implements Screen {
     public void populateWorld() {
         if (this.map.getLayers().get("walls") != null) {
             for (MapObject object : this.map.getLayers().get("walls").getObjects()) {
-                new EnvironmentEntity(this.world, ((RectangleMapObject) object).getRectangle());
+                new EnvironmentObject(this.world, ((RectangleMapObject) object).getRectangle());
             }
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'walls' layer!");
@@ -87,20 +87,20 @@ public class PlayScreen implements Screen {
             MapObject protagonistSpawnMapObject = this.map.getLayers().get("berniespawn").getObjects().get(0);
             if (protagonistSpawnMapObject != null) {
                 Rectangle bounds = ((RectangleMapObject) protagonistSpawnMapObject).getRectangle();
-                this.protagonist = new Protagonist("protagonist", this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("bernie"));
+                this.player = new Player("player", this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("bernie"));
             } else {
-                this.protagonist = new Protagonist("protagonist", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
-                Gdx.app.error("PlayScreen", "Unable to find spawnpoint for protagonist in 'berniespawn' layer of map! Fell back to spawning at (0, 0).");
+                this.player = new Player("player", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
+                Gdx.app.error("PlayScreen", "Unable to find spawnpoint for player in 'berniespawn' layer of map! Fell back to spawning at (0, 0).");
             }
         } else {
-            this.protagonist = new Protagonist("protagonist", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
+            this.player = new Player("player", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
             Gdx.app.error("PlayScreen", "Map has no 'berniespawn' layer! Fell back to spawning at (0, 0).");
         }
 
         if (this.map.getLayers().get("exit") != null) {
             MapObject exitSpawnMapObject = this.map.getLayers().get("exit").getObjects().get(0);
             if (exitSpawnMapObject != null) {
-                new GoalEntity(this.world, ((RectangleMapObject) exitSpawnMapObject).getRectangle());
+                new ExitPortal(this.world, ((RectangleMapObject) exitSpawnMapObject).getRectangle());
             } else {
                 Gdx.app.error("PlayScreen", "Unable to find exit in 'exit' layer of map! No exit was spawned; there is no exit to this map.");
             }
@@ -115,8 +115,8 @@ public class PlayScreen implements Screen {
     }
 
     public void handleInput(float delta) {
-        if (this.protagonist != null) {
-            this.protagonist.handleInput();
+        if (this.player != null) {
+            this.player.handleInput();
         }
     }
 
@@ -128,9 +128,9 @@ public class PlayScreen implements Screen {
 
         EntityManager.updateAllEntities(delta);
 
-        if (this.protagonist != null) {
-            // center camera on protagonist
-            this.camera.position.set(this.protagonist.getPosition(), 0);
+        if (this.player != null) {
+            // center camera on player
+            this.camera.position.set(this.player.getPosition(), 0);
         }
 
         this.camera.update();
@@ -153,7 +153,7 @@ public class PlayScreen implements Screen {
         // TODO: remove/comment this before release
         this.debugRenderer.render(world, camera.combined);
 
-        // render protagonist
+        // render player
         this.spriteBatch.setProjectionMatrix(camera.combined);
         this.spriteBatch.begin();
         EntityManager.drawAllEntities(this.spriteBatch);
@@ -162,6 +162,35 @@ public class PlayScreen implements Screen {
         // render HUD
         this.spriteBatch.setProjectionMatrix(this.hud.getStageCamera());
         this.hud.drawStage();
+    }
+
+    @Override
+    public void beginContact(Contact contact) {
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
+
+        if (fixtureA.getUserData() instanceof InteractiveEntity) {
+            ((InteractiveEntity) fixtureA.getUserData()).onCollision(fixtureB.getFilterData().categoryBits);
+        }
+
+        if (fixtureB.getUserData() instanceof InteractiveEntity) {
+            ((InteractiveEntity) fixtureB.getUserData()).onCollision(fixtureA.getFilterData().categoryBits);
+        }
+    }
+
+    @Override
+    public void endContact(Contact contact) {
+
+    }
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {
+
+    }
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {
+
     }
 
     @Override

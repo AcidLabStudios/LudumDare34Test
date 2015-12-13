@@ -1,4 +1,4 @@
-package com.jja.ld34.sprites;
+package com.jja.ld34.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -9,7 +9,7 @@ import com.jja.ld34.scenes.Hud;
 import com.jja.ld34.screens.PlayScreen;
 
 //Object that Bernie has to collect to complete the exit to the next level.
-public class ExitPart extends Collectible {
+public class ExitPart extends CollectibleEntity {
 
     public static final float SIZE = 32f;
 
