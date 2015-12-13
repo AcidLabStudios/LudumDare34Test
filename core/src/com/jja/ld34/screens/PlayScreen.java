@@ -110,7 +110,7 @@ public class PlayScreen implements Screen, ContactListener {
                 new Turret("turretspawn", this.world, new Vector2(bounds.x, bounds.y));
             }
         } else {
-            Gdx.app.error("PlayScreen", "Map has no 'exitparts' layer!");
+            Gdx.app.error("PlayScreen", "Map has no 'turretspawn' layer!");
         }
     }
 
