@@ -23,7 +23,6 @@ public enum Trait {
         List<Trait> traits = new ArrayList<Trait>();
         for (Trait trait : Trait.values()) {
             if (rand.nextInt(trait.probability) == 0) {
-                Gdx.app.error("Trait", "CONGRATS YOU ARE NOW " + trait);
                 traits.add(trait);
             }
 
