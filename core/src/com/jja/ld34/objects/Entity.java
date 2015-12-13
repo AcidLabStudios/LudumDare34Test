@@ -1,5 +1,6 @@
 package com.jja.ld34.objects;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -17,15 +18,15 @@ public abstract class Entity extends Sprite implements Object {
     protected boolean shouldDestroy;
     protected boolean destroyed;
 
-    public Entity(String id, World world, Vector2 initialPosition, float initialSize, short filterCategoryBit, short filterMaskBit, TextureAtlas.AtlasRegion textureRegion) {
-        super(textureRegion);
+    public Entity(String id, World world, Vector2 initialPosition, Vector2 initialSize, short filterCategoryBit, short filterMaskBit, Texture initialTexture) {
+        super(initialTexture);
 
         this.id = id;
         this.world = world;
         this.body = initializeBody(initialPosition, filterCategoryBit, filterMaskBit);
         this.shouldDestroy = this.destroyed = false;
 
-        setBounds(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2, initialSize / Ld34Game.PIXELS_PER_METER, initialSize / Ld34Game.PIXELS_PER_METER);
+        setBounds(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2, initialSize.x / Ld34Game.PIXELS_PER_METER, initialSize.y / Ld34Game.PIXELS_PER_METER);
         setPosition(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2);
 
         ObjectManager.registerObject(this);

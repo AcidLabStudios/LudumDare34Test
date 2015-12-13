@@ -9,7 +9,6 @@ public class Ld34Game extends Game {
     public static final int GAME_WIDTH = 640;  // in px
     public static final int GAME_HEIGHT = 480;  // in px
 	public static final float PIXELS_PER_METER = 100f;
-	public static final float BASE_SPRITE_SIZE = 32f;	// in px
 
 	private Screen currentScreen;
 

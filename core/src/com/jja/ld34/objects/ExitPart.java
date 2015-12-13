@@ -1,6 +1,7 @@
 package com.jja.ld34.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -13,9 +14,8 @@ public class ExitPart extends CollectibleEntity {
 
     public static final float SIZE = 32f;
 
-    public ExitPart(String uniqueName, World world, Vector2 initialPosition, TextureAtlas.AtlasRegion textureRegion) {
-        super(uniqueName, world, initialPosition, SIZE, textureRegion);
-        setRegion(PlayScreen.generateTextureRegion(getTexture(), 12));
+    public ExitPart(String uniqueName, World world, Vector2 initialPosition) {
+        super(uniqueName, world, initialPosition, SIZE, new Texture("battery/battery.png"));
     }
 
     @Override

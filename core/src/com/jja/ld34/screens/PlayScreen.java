@@ -41,11 +41,9 @@ public class PlayScreen implements Screen, ContactListener {
 
     private Player player;
 
-    private TextureAtlas textureAtlas;
     private Timer gameStateTimer;
 
     public PlayScreen() {
-        this.textureAtlas = new TextureAtlas("jja-ld34.pack");
         this.spriteBatch = new SpriteBatch();
 
         this.camera = new OrthographicCamera();
@@ -85,7 +83,7 @@ public class PlayScreen implements Screen, ContactListener {
             int exitPartsCount = 0;
             for (MapObject object : this.map.getLayers().get("exitparts").getObjects()) {
                 Rectangle bounds = ((RectangleMapObject) object).getRectangle();
-                new ExitPart("exitPart" + exitPartsCount, this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("battery"));
+                new ExitPart("exitPart" + exitPartsCount, this.world, new Vector2(bounds.x, bounds.y));
                 exitPartsCount++;
             }
         } else {
@@ -109,7 +107,7 @@ public class PlayScreen implements Screen, ContactListener {
         if (this.map.getLayers().get("turretspawn") != null) {
             for (MapObject object : this.map.getLayers().get("turretspawn").getObjects()) {
                 Rectangle bounds = ((RectangleMapObject) object).getRectangle();
-                new Turret("turretspawn", this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("battery"));
+                new Turret("turretspawn", this.world, new Vector2(bounds.x, bounds.y));
             }
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'exitparts' layer!");
@@ -121,13 +119,13 @@ public class PlayScreen implements Screen, ContactListener {
             MapObject protagonistSpawnMapObject = this.map.getLayers().get("berniespawn").getObjects().get(0);
             if (protagonistSpawnMapObject != null) {
                 Rectangle bounds = ((RectangleMapObject) protagonistSpawnMapObject).getRectangle();
-                this.player = new Player("player", this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("bernie"));
+                this.player = new Player("player", this.world, new Vector2(bounds.x, bounds.y));
             } else {
-                this.player = new Player("player", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
+                this.player = new Player("player", this.world, new Vector2(0, 0));
                 Gdx.app.error("PlayScreen", "Unable to find spawnpoint for player in 'berniespawn' layer of map! Fell back to spawning at (0, 0).");
             }
         } else {
-            this.player = new Player("player", this.world, new Vector2(0, 0), this.textureAtlas.findRegion("bernie"));
+            this.player = new Player("player", this.world, new Vector2(0, 0));
             Gdx.app.error("PlayScreen", "Map has no 'berniespawn' layer! Fell back to spawning at (0, 0).");
         }
     }
@@ -257,9 +255,5 @@ public class PlayScreen implements Screen, ContactListener {
         this.world.dispose();
         this.debugRenderer.dispose();
         this.hud.dispose();
-    }
-
-    public static TextureRegion generateTextureRegion(Texture texture, int index) {
-        return new TextureRegion(texture, 2 + (index * (int) Ld34Game.BASE_SPRITE_SIZE), 0, (int) Ld34Game.BASE_SPRITE_SIZE, (int) Ld34Game.BASE_SPRITE_SIZE);
     }
 }

@@ -2,6 +2,7 @@ package com.jja.ld34.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 
 public class Player extends Entity {
 
+    private static final int SPRITE_SIZE = 32;  // in px
     private static final float BASE_SIZE = 32f;
     private static final float BASE_MOVEMENT_SPEED = 2f;
 
@@ -41,8 +43,8 @@ public class Player extends Entity {
     private HashMap<Direction, Animation> movingAnimationMap;
     private float animationTimer;
 
-    public Player(String uniqueName, World world, Vector2 initialPosition, TextureAtlas.AtlasRegion textureRegion) {
-        super(uniqueName, world, initialPosition, BASE_SIZE, FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, textureRegion);
+    public Player(String uniqueName, World world, Vector2 initialPosition) {
+        super(uniqueName, world, initialPosition, new Vector2(BASE_SIZE, BASE_SIZE), FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, new Texture("bernie/bernie.png"));
 
         this.currentDirection = this.previousDirection = Direction.DOWN;
         this.currentState = this.previousState = State.IDLING;
@@ -50,32 +52,32 @@ public class Player extends Entity {
 
         // setup idling texture regions
         this.idlingTextureRegionMap = new HashMap<Direction, TextureRegion>(4);
-        this.idlingTextureRegionMap.put(Direction.DOWN, PlayScreen.generateTextureRegion(getTexture(), 0));
-        this.idlingTextureRegionMap.put(Direction.LEFT, PlayScreen.generateTextureRegion(getTexture(), 4));
-        this.idlingTextureRegionMap.put(Direction.RIGHT, PlayScreen.generateTextureRegion(getTexture(), 7));
-        this.idlingTextureRegionMap.put(Direction.UP, PlayScreen.generateTextureRegion(getTexture(), 10));
+        this.idlingTextureRegionMap.put(Direction.DOWN, new TextureRegion(getTexture(), 0, 0, SPRITE_SIZE, SPRITE_SIZE));
+        this.idlingTextureRegionMap.put(Direction.LEFT, new TextureRegion(getTexture(), 4 * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
+        this.idlingTextureRegionMap.put(Direction.RIGHT, new TextureRegion(getTexture(), 7 * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
+        this.idlingTextureRegionMap.put(Direction.UP, new TextureRegion(getTexture(), 10 * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
 
         // setup animations
         this.movingAnimationMap = new HashMap<Direction, Animation>(4);
         Array<TextureRegion> frames;
         frames = new Array<TextureRegion>();
         for (int i = 0; i <= 2; i++) {
-            frames.add(PlayScreen.generateTextureRegion(getTexture(), i));
+            frames.add(new TextureRegion(getTexture(), i * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
         }
         this.movingAnimationMap.put(Direction.DOWN, new Animation(getAnimationFramerate(), frames));
         frames = new Array<TextureRegion>();
         for (int i = 3; i <= 5; i++) {
-            frames.add(PlayScreen.generateTextureRegion(getTexture(), i));
+            frames.add(new TextureRegion(getTexture(), i * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
         }
         this.movingAnimationMap.put(Direction.LEFT, new Animation(getAnimationFramerate(), frames));
         frames = new Array<TextureRegion>();
         for (int i = 6; i <= 8; i++) {
-            frames.add(PlayScreen.generateTextureRegion(getTexture(), i));
+            frames.add(new TextureRegion(getTexture(), i * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
         }
         this.movingAnimationMap.put(Direction.RIGHT, new Animation(getAnimationFramerate(), frames));
         frames = new Array<TextureRegion>();
         for (int i = 9; i <= 11; i++) {
-            frames.add(PlayScreen.generateTextureRegion(getTexture(), i));
+            frames.add(new TextureRegion(getTexture(), i * SPRITE_SIZE, 0, SPRITE_SIZE, SPRITE_SIZE));
         }
         this.movingAnimationMap.put(Direction.UP, new Animation(getAnimationFramerate(), frames));
 

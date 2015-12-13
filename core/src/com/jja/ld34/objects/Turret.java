@@ -1,5 +1,6 @@
 package com.jja.ld34.objects;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -15,8 +16,8 @@ public class Turret extends Entity {
     private String fireDirection = "LEFT";
     private Timer gameStateTimer;
     
-    public Turret (String uniqueName, World world, Vector2 initialPosition, TextureAtlas.AtlasRegion textureRegion) {
-        super(uniqueName, world, initialPosition, _width, FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, textureRegion);
+    public Turret (String uniqueName, World world, Vector2 initialPosition) {
+        super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.ENEMY_BIT, FixtureFilterBit.ALL_FLAGS, new Texture("turret/turret.png"));
 
         this.gameStateTimer = new Timer();
         this.gameStateTimer.scheduleTask(new Timer.Task() {
