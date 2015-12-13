@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.jja.ld34.Ld34Game;
+import com.jja.ld34.scenes.Hud;
 
 //Object that Bernie has to collect to complete the exit to the next level.
 public class ExitPart extends Collectible {
@@ -22,6 +23,7 @@ public class ExitPart extends Collectible {
         //Increment to a count somewhere else keeping track of pieces gathered for that level,
         //and also update the display in the HUD to reflect the change.
         Gdx.app.error("ExitPart", "Collected " + this.uniqueName);
+        Hud.exitPartsCount ++;
     }
 
     @Override

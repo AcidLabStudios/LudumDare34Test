@@ -126,6 +126,8 @@ public class PlayScreen implements Screen {
         this.camera.position.set(this.protagonist.getPosition(), 0);    // center camera on protagonist
         this.camera.update();
         this.mapRenderer.setView(this.camera);
+        
+        hud.update();
     }
 
     @Override
