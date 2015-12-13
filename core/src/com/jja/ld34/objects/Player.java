@@ -12,9 +12,13 @@ import com.badlogic.gdx.utils.Array;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
 import com.jja.ld34.scenes.Hud;
+import com.jja.ld34.Trait;
+import com.jja.ld34.scenes.Hud;
 import com.jja.ld34.screens.PlayScreen;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class Player extends Entity implements InteractiveEntity{
 
@@ -43,6 +47,7 @@ public class Player extends Entity implements InteractiveEntity{
     private HashMap<Direction, TextureRegion> idlingTextureRegionMap;
     private HashMap<Direction, Animation> movingAnimationMap;
     private float animationTimer;
+    private List<Trait> currentTraits;
 
     public Player(String uniqueName, World world, Vector2 initialPosition) {
         super(uniqueName, world, initialPosition, new Vector2(BASE_SIZE, BASE_SIZE), FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, new Texture("bernie/bernie.png"));
@@ -50,6 +55,8 @@ public class Player extends Entity implements InteractiveEntity{
         this.currentDirection = this.previousDirection = Direction.DOWN;
         this.currentState = this.previousState = State.IDLING;
         this.animationTimer = 0;
+        this.currentTraits = Trait.getRandomTraits(1);  // TODO: more traits per level?
+        Hud.traitDescription = Arrays.asList(this.currentTraits).toString().replaceAll("[\\[\\]]", "").replace(", ", "") + "BERN";
 
         // setup idling texture regions
         this.idlingTextureRegionMap = new HashMap<Direction, TextureRegion>(4);
@@ -103,7 +110,11 @@ public class Player extends Entity implements InteractiveEntity{
     }
 
     public float getMovementSpeed() {
-        return BASE_MOVEMENT_SPEED;
+        if (currentTraits.contains(Trait.HYPER)) {
+            return BASE_MOVEMENT_SPEED * 2;
+        } else {
+            return BASE_MOVEMENT_SPEED;
+        }
     }
     public float getAnimationFramerate() {
         return 1 / 15f;
@@ -111,9 +122,17 @@ public class Player extends Entity implements InteractiveEntity{
 
     public float getFriction(boolean inXDir) {
         if (inXDir) {
-            return -this.body.getLinearVelocity().x;
+            if (currentTraits.contains(Trait.SLIPPERY)) {
+                return -this.body.getLinearVelocity().x * 0.05f;
+            } else {
+                return -this.body.getLinearVelocity().x;
+            }
         } else {
-            return -this.body.getLinearVelocity().y;
+            if (currentTraits.contains(Trait.SLIPPERY)) {
+                return -this.body.getLinearVelocity().y * 0.05f;
+            } else {
+                return -this.body.getLinearVelocity().y;
+            }
         }
     }
 

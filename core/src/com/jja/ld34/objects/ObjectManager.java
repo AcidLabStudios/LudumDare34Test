@@ -13,18 +13,18 @@ public class ObjectManager {
 
     public static void registerObject(Object object) {
         if (registeredObjects.containsKey(object.getId())) {
-            Gdx.app.error("ObjectManager", "Unable to register '" + object.getId() + "' because that id is already registered, and ids must be unique");
+            Gdx.app.debug("ObjectManager", "Unable to register '" + object.getId() + "' because that id is already registered, and ids must be unique");
         }
 
         registeredObjects.put(object.getId(), object);
-        Gdx.app.error("ObjectManager", "Registered new object: " + object.getId());
+        Gdx.app.debug("ObjectManager", "Registered new object: " + object.getId());
     }
 
     public static void deregisterObject(Object object) {
         if (registeredObjects.remove(object.getId()) == null) {
             Gdx.app.error("ObjectManager", "Unable to deregister '" + object.getId() + "' because no object with that id is currently registered");
         } else {
-            Gdx.app.error("ObjectManager", "Deregistered object: " + object.getId());
+            Gdx.app.debug("ObjectManager", "Deregistered object: " + object.getId());
         }
     }
 
