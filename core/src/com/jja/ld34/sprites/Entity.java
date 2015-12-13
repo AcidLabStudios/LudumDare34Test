@@ -1,6 +1,5 @@
 package com.jja.ld34.sprites;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -27,7 +26,8 @@ public abstract class Entity extends Sprite {
         this.body = initializeBody(initialPosition, filterCategoryBit, filterMaskBit);
         this.shouldDestroy = this.destroyed = false;
 
-        setBounds(initialPosition.x, initialPosition.y, initialSize / Ld34Game.PIXELS_PER_METER, initialSize / Ld34Game.PIXELS_PER_METER);
+        setBounds(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2, initialSize / Ld34Game.PIXELS_PER_METER, initialSize / Ld34Game.PIXELS_PER_METER);
+        setPosition(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2);
 
         EntityManager.registerEntity(this);
         isInitialized = true;

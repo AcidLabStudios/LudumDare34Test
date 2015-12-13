@@ -2,11 +2,14 @@ package com.jja.ld34.sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.jja.ld34.Ld34Game;
+import com.jja.ld34.screens.PlayScreen;
 
 import java.util.HashMap;
 
@@ -46,32 +49,32 @@ public class Protagonist extends Entity implements ContactListener {
 
         // setup idling texture regions
         this.idlingTextureRegionMap = new HashMap<Direction, TextureRegion>(4);
-        this.idlingTextureRegionMap.put(Direction.DOWN, new TextureRegion(getTexture(), 0 * (int) BASE_SIZE, 0, (int) BASE_SIZE, (int) BASE_SIZE));
-        this.idlingTextureRegionMap.put(Direction.LEFT, new TextureRegion(getTexture(), 4 * (int) BASE_SIZE, 0, (int) BASE_SIZE, (int) BASE_SIZE));
-        this.idlingTextureRegionMap.put(Direction.RIGHT, new TextureRegion(getTexture(), 7 * (int) BASE_SIZE, 0, (int) BASE_SIZE, (int) BASE_SIZE));
-        this.idlingTextureRegionMap.put(Direction.UP, new TextureRegion(getTexture(), 10 * (int) BASE_SIZE, 0, (int) BASE_SIZE, (int) BASE_SIZE));
+        this.idlingTextureRegionMap.put(Direction.DOWN, PlayScreen.generateTextureRegion(getTexture(), 0));
+        this.idlingTextureRegionMap.put(Direction.LEFT, PlayScreen.generateTextureRegion(getTexture(), 4));
+        this.idlingTextureRegionMap.put(Direction.RIGHT, PlayScreen.generateTextureRegion(getTexture(), 7));
+        this.idlingTextureRegionMap.put(Direction.UP, PlayScreen.generateTextureRegion(getTexture(), 10));
 
         // setup animations
         this.movingAnimationMap = new HashMap<Direction, Animation>(4);
         Array<TextureRegion> frames;
         frames = new Array<TextureRegion>();
         for (int i = 0; i <= 2; i++) {
-            frames.add(new TextureRegion(getTexture(), i * (int) BASE_SIZE, 0, (int) BASE_SIZE, (int) BASE_SIZE));
+            frames.add(PlayScreen.generateTextureRegion(getTexture(), i));
         }
         this.movingAnimationMap.put(Direction.DOWN, new Animation(getAnimationFramerate(), frames));
         frames = new Array<TextureRegion>();
         for (int i = 3; i <= 5; i++) {
-            frames.add(new TextureRegion(getTexture(), i * (int) BASE_SIZE, 0, (int) BASE_SIZE, (int) BASE_SIZE));
+            frames.add(PlayScreen.generateTextureRegion(getTexture(), i));
         }
         this.movingAnimationMap.put(Direction.LEFT, new Animation(getAnimationFramerate(), frames));
         frames = new Array<TextureRegion>();
         for (int i = 6; i <= 8; i++) {
-            frames.add(new TextureRegion(getTexture(), i * (int) BASE_SIZE, 0, (int) BASE_SIZE, (int) BASE_SIZE));
+            frames.add(PlayScreen.generateTextureRegion(getTexture(), i));
         }
         this.movingAnimationMap.put(Direction.RIGHT, new Animation(getAnimationFramerate(), frames));
         frames = new Array<TextureRegion>();
         for (int i = 9; i <= 11; i++) {
-            frames.add(new TextureRegion(getTexture(), i * (int) BASE_SIZE, 0, (int) BASE_SIZE, (int) BASE_SIZE));
+            frames.add(PlayScreen.generateTextureRegion(getTexture(), i));
         }
         this.movingAnimationMap.put(Direction.UP, new Animation(getAnimationFramerate(), frames));
 

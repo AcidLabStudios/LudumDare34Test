@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -13,7 +15,8 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jja.ld34.Ld34Game;
@@ -73,7 +76,7 @@ public class PlayScreen implements Screen {
             int exitPartsCount = 0;
             for (MapObject object : this.map.getLayers().get("exitparts").getObjects()) {
                 Rectangle bounds = ((RectangleMapObject) object).getRectangle();
-                new ExitPart("exitPart" + exitPartsCount, this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("bernie")); // TODO: pass an actual exit part texture region here
+                new ExitPart("exitPart" + exitPartsCount, this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("battery"));
                 exitPartsCount++;
             }
         } else {
@@ -112,7 +115,9 @@ public class PlayScreen implements Screen {
     }
 
     public void handleInput(float delta) {
-        this.protagonist.handleInput();
+        if (this.protagonist != null) {
+            this.protagonist.handleInput();
+        }
     }
 
     public void update(float delta) {
@@ -123,7 +128,11 @@ public class PlayScreen implements Screen {
 
         EntityManager.updateAllEntities(delta);
 
-        this.camera.position.set(this.protagonist.getPosition(), 0);    // center camera on protagonist
+        if (this.protagonist != null) {
+            // center camera on protagonist
+            this.camera.position.set(this.protagonist.getPosition(), 0);
+        }
+
         this.camera.update();
         this.mapRenderer.setView(this.camera);
         
@@ -182,5 +191,9 @@ public class PlayScreen implements Screen {
         this.world.dispose();
         this.debugRenderer.dispose();
         this.hud.dispose();
+    }
+
+    public static TextureRegion generateTextureRegion(Texture texture, int index) {
+        return new TextureRegion(texture, 2 + (index * (int) Ld34Game.BASE_SPRITE_SIZE), 0, (int) Ld34Game.BASE_SPRITE_SIZE, (int) Ld34Game.BASE_SPRITE_SIZE);
     }
 }

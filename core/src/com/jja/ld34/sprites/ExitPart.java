@@ -2,12 +2,11 @@ package com.jja.ld34.sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.jja.ld34.Ld34Game;
 import com.jja.ld34.scenes.Hud;
+import com.jja.ld34.screens.PlayScreen;
 
 //Object that Bernie has to collect to complete the exit to the next level.
 public class ExitPart extends Collectible {
@@ -16,6 +15,7 @@ public class ExitPart extends Collectible {
 
     public ExitPart(String uniqueName, World world, Vector2 initialPosition, TextureAtlas.AtlasRegion textureRegion) {
         super(uniqueName, world, initialPosition, SIZE, textureRegion);
+        setRegion(PlayScreen.generateTextureRegion(getTexture(), 12));
     }
 
     @Override
