@@ -1,52 +1,71 @@
 package com.jja.ld34.objects;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Timer;
+import com.jja.ld34.FixtureFilterBit;
+import com.jja.ld34.Ld34Game;
 
-import java.util.Timer;
-import java.util.TimerTask;
+public class Turret extends Entity {
 
-public class Turret extends Sprite {
-
-    private int fireInterval = 3000;
-    private String fireDirection;
+    public static final float _width = 32f; //float specifies pixels
+    public static final float _height = 48f;
     
-    private boolean canFire = true;
-    private Timer timer = new Timer();
+    private String fireDirection = "LEFT";
+    private Timer gameStateTimer;
     
-    public Turret (World world, TextureAtlas.AtlasRegion textureRegion) {
-        super(textureRegion);
-        
+    public Turret (String uniqueName, World world, Vector2 initialPosition, TextureAtlas.AtlasRegion textureRegion) {
+        super(uniqueName, world, initialPosition, _width, FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, textureRegion);
+
+        this.gameStateTimer = new Timer();
+        this.gameStateTimer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                fireBullet();
+            }
+        }, 2, 2);
         //Probably make him a solid object like terrain.
     }
     
-    public void update(float delta) {
-        if (canFire) {
-            timer.schedule(timerTask, fireInterval);
-            canFire = false;
+    public void fireBullet() {
+        //Fire a bullet based on fireDirection
+        String localFireDirection;
+        if(fireDirection == "LEFT") {
+            
+        } else if(fireDirection == "RIGHT"){
+            
+        } else if(fireDirection == "UP") {
+            
+        } else if (fireDirection == "DOWN"){
+            
+        } else {
+            //Failed case
         }
     }
-
-    protected TimerTask timerTask = new TimerTask() {
-        @Override
-        public void run() {
-            //fire projectile at fireDirection
-            //play fire animation
-            canFire = true;
-        }
-    };
-
+    
     public String getFireDirection() {
         return fireDirection;
     }
     public void setFireDirection(String fireDirection) {
         this.fireDirection = fireDirection;
     }
-    public int getFireInterval() {
-        return fireInterval;
-    }
-    public void setFireInterval(int fireInterval) {
-        this.fireInterval = fireInterval;
+
+    @Override
+    public Body initializeBody(Vector2 initialPosition, short filterCategoryBit, short filterMaskBit) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set((initialPosition.x / Ld34Game.PIXELS_PER_METER) + ((_width / 2) / Ld34Game.PIXELS_PER_METER), (initialPosition.y / Ld34Game.PIXELS_PER_METER) + ((_width / 2) / Ld34Game.PIXELS_PER_METER));
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        this.body = world.createBody(bodyDef);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox((_width / 2) / Ld34Game.PIXELS_PER_METER, (_width / 2) / Ld34Game.PIXELS_PER_METER);
+        fixtureDef.filter.categoryBits = filterCategoryBit;
+        fixtureDef.filter.maskBits = filterMaskBit;
+        fixtureDef.shape = shape;
+        this.body.createFixture(fixtureDef).setUserData(this);
+
+        return this.body;
     }
 }

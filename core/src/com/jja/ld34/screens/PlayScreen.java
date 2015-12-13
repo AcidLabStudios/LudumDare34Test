@@ -104,6 +104,16 @@ public class PlayScreen implements Screen, ContactListener {
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'exit' layer!");
         }
+        
+        //spawn turrets
+        if (this.map.getLayers().get("turretspawn") != null) {
+            for (MapObject object : this.map.getLayers().get("turretspawn").getObjects()) {
+                Rectangle bounds = ((RectangleMapObject) object).getRectangle();
+                new Turret("turretspawn", this.world, new Vector2(bounds.x, bounds.y), this.textureAtlas.findRegion("battery"));
+            }
+        } else {
+            Gdx.app.error("PlayScreen", "Map has no 'exitparts' layer!");
+        }
     }
 
     public void spawnPlayer() {

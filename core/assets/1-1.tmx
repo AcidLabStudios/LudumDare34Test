@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" nextobjectid="48">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" nextobjectid="49">
  <tileset firstgid="1" name="indoor_sheet_new" tilewidth="32" tileheight="32" tilecount="4096">
   <image source="indoor_sheet_new.png" width="2048" height="2048"/>
  </tileset>
@@ -150,5 +150,8 @@
  </objectgroup>
  <objectgroup name="exit">
   <object id="47" x="800" y="800" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup name="turretspawn">
+  <object id="48" x="928" y="672" width="32" height="32"/>
  </objectgroup>
 </map>
