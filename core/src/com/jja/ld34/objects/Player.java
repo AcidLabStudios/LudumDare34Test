@@ -11,11 +11,12 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
+import com.jja.ld34.scenes.Hud;
 import com.jja.ld34.screens.PlayScreen;
 
 import java.util.HashMap;
 
-public class Player extends Entity {
+public class Player extends Entity implements InteractiveEntity{
 
     private static final int SPRITE_SIZE = 32;  // in px
     private static final float BASE_SIZE = 32f;
@@ -194,16 +195,27 @@ public class Player extends Entity {
         fixtureDef.filter.categoryBits = filterCategoryBit;
         fixtureDef.filter.maskBits = filterMaskBit;
         fixtureDef.shape = shape;
-        this.body.createFixture(fixtureDef).setUserData(this.id);
+        this.body.createFixture(fixtureDef).setUserData(this);
 
         return body;
     }
 
     public void kill() {
         this.shouldDestroy = true;
+        Hud.timeLeft = 0;
     }
 
     public Vector2 getPosition() {
         return this.body.getPosition();
+    }
+
+    @Override
+    public void onCollision(short collidingFixtureFilterCategoryBits) {
+        Gdx.app.error("Player", "On collision invoked!");
+        if (!FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.ENVIRONMENT_BIT) && 
+                !FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.PROTAGONIST_BIT) && 
+                !FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.COLLECTIBLES_BIT)) {
+            kill();
+        }
     }
 }

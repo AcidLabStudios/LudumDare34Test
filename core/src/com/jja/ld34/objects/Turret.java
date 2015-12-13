@@ -20,7 +20,7 @@ public class Turret extends Entity {
     public static int bulletsFired = 0;
     
     public Turret (String uniqueName, World world, Vector2 initialPosition) {
-        super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.ENEMY_BIT, FixtureFilterBit.ALL_FLAGS, new Texture("turret/turret.png"));
+        super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.TURRET_BIT, (short) (FixtureFilterBit.ALL_FLAGS & ~FixtureFilterBit.PROJECTILE_BIT), new Texture("turret/turret.png"));
 
         this.gameStateTimer = new Timer();
         this.gameStateTimer.scheduleTask(new Timer.Task() {

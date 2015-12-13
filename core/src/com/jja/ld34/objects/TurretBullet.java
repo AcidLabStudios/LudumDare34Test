@@ -24,7 +24,7 @@ public class TurretBullet extends Entity implements InteractiveEntity{
     private State previousState;
     
     public TurretBullet(String uniqueName, World world, Vector2 initialPosition, String fireDirection, Texture texture) {
-        super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.ENEMY_BIT, FixtureFilterBit.ALL_FLAGS, texture);
+        super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.PROJECTILE_BIT, (short) (FixtureFilterBit.ALL_FLAGS & ~FixtureFilterBit.TURRET_BIT), texture);
         _fireDirection = fireDirection;
 
         this.body.applyLinearImpulse(new Vector2(-getMovementSpeed(), 0), this.body.getWorldCenter(), true);
@@ -66,9 +66,7 @@ public class TurretBullet extends Entity implements InteractiveEntity{
 
     @Override
     public void onCollision(short collidingFixtureFilterCategoryBits) {
-        if (FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.ENVIRONMENT_BIT)) {
-            this.shouldDestroy = true;
-        }
+        this.shouldDestroy = true;
     }
 
     private enum Direction {
