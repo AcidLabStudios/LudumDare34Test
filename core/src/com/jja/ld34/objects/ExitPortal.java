@@ -5,10 +5,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.World;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.scenes.Hud;
+import com.jja.ld34.screens.PlayScreen;
 
 public class ExitPortal extends EnvironmentObject implements InteractiveObject {
 
-    private boolean hasBeenActivated;
+    public static boolean hasBeenActivated;
 
     public ExitPortal(World world, Rectangle bounds) {
         super(world, bounds);

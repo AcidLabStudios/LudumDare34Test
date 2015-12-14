@@ -41,6 +41,8 @@ public class PlayScreen implements Screen, ContactListener {
     private Timer gameStateTimer;
     private int numPlayerDeaths;
     private boolean isGameOver;
+    
+    private Integer currentLevel = 1;
 
     public PlayScreen() {
         this.spriteBatch = new SpriteBatch();
@@ -51,7 +53,7 @@ public class PlayScreen implements Screen, ContactListener {
         this.hud = new Hud(this.spriteBatch);
 
         this.mapLoader = new TmxMapLoader();
-        this.map = this.mapLoader.load("1-1.tmx");  // TODO
+        loadMyMap("1-1.tmx");
         this.mapRenderer = new OrthogonalTiledMapRenderer(this.map, 1 / Ld34Game.PIXELS_PER_METER);
         this.camera.position.set(this.viewport.getWorldWidth() / 2, this.viewport.getWorldHeight() / 2, 0);
 
@@ -75,6 +77,10 @@ public class PlayScreen implements Screen, ContactListener {
             }
         }, 1, 1);
         setNewTimeLeft();
+    }
+    
+    public void loadMyMap(String myMap) {
+        this.map = this.mapLoader.load(myMap);
     }
 
     public void populateWorld() {
@@ -177,6 +183,23 @@ public class PlayScreen implements Screen, ContactListener {
                 spawnPlayer();
                 spawnTrumps();  // also respawn all trumps
             }
+        }
+        
+        if(ExitPortal.hasBeenActivated){
+            this.isGameOver = true;
+            ObjectManager.deregisterAllObjects();
+            ExitPortal.hasBeenActivated = false;
+            currentLevel++;
+            if(currentLevel == 2){
+                loadMyMap("1-2.tmx");
+            } else if (currentLevel == 3){
+                loadMyMap("1-3.tmx");
+            }
+            populateWorld();
+            numPlayerDeaths = 0;
+            Hud.exitPartsCount = 0;
+            setNewTimeLeft();
+            isGameOver = false;
         }
     }
 
