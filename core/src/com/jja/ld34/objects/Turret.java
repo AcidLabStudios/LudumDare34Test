@@ -19,6 +19,8 @@ public class Turret extends Entity {
     private Texture bulletTexture = new Texture("turret_bullet/energy_ball.png");
     public static int bulletsFired = 0;
     private static final float bulletSpeed = 2f;
+    private Integer bulletOffsetX = 10;
+    private Integer bulletOffsetY = 30;
     
     public Turret (String uniqueName, World world, Vector2 initialPosition) {
         super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.TURRET_BIT, (short) (FixtureFilterBit.ALL_FLAGS & ~FixtureFilterBit.PROJECTILE_BIT), new Texture("turret/turret.png"));
@@ -38,14 +40,14 @@ public class Turret extends Entity {
     public void fireBullet() {
         //Fire a bullet based on fireDirection
 
-        
-        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), new Vector2(-bulletSpeed, 0), bulletTexture); //left
+        //_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY
+        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(-bulletSpeed, 0), bulletTexture); //left
         bulletsFired ++;
-        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), new Vector2(bulletSpeed, 0), bulletTexture); //right
+        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(bulletSpeed, 0), bulletTexture); //right
         bulletsFired ++;
-        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), new Vector2(0, bulletSpeed), bulletTexture); //up
+        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(0, bulletSpeed), bulletTexture); //up
         bulletsFired ++;
-        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), new Vector2(0, -bulletSpeed), bulletTexture); //down
+        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(0, -bulletSpeed), bulletTexture); //down
         bulletsFired ++;
         
         /*String localFireDirection;

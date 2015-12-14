@@ -14,10 +14,6 @@ public class TurretBullet extends Entity implements InteractiveEntity{
     public static final float _width = 16f; //float specifies pixels
     public static final float _height = 16f;
 
-    private static final float BASE_MOVEMENT_SPEED = 2f;
-    
-    private String _fireDirection;
-
     private Direction currentDirection;
     private State currentState;
     private Direction previousDirection;
@@ -49,8 +45,8 @@ public class TurretBullet extends Entity implements InteractiveEntity{
         this.body = world.createBody(bodyDef);
 
         FixtureDef fixtureDef = new FixtureDef();
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox((_width / 2) / Ld34Game.PIXELS_PER_METER, (_width / 2) / Ld34Game.PIXELS_PER_METER);
+        CircleShape shape = new CircleShape();
+        shape.setRadius(8 / Ld34Game.PIXELS_PER_METER);
         fixtureDef.filter.categoryBits = filterCategoryBit;
         fixtureDef.filter.maskBits = filterMaskBit;
         fixtureDef.shape = shape;
