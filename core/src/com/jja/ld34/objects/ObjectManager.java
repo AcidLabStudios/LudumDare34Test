@@ -9,23 +9,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ObjectManager {
 
-    private static HashMap<String, Object> registeredObjects = new HashMap<String, Object>();
+    private static long nextId = 0;
+    private static HashMap<Long, Object> registeredObjects = new HashMap<Long, Object>();
 
-    public static void registerObject(Object object) {
-        if (registeredObjects.containsKey(object.getId())) {
-            Gdx.app.debug("ObjectManager", "Unable to register '" + object.getId() + "' because that id is already registered, and ids must be unique");
-        }
+    public static boolean isObjectRegistered(String id) {
+        return registeredObjects.containsKey(id);
+    }
 
-        registeredObjects.put(object.getId(), object);
-        Gdx.app.debug("ObjectManager", "Registered new object: " + object.getId());
+    public static long registerObject(Object object) {
+        registeredObjects.put(nextId, object);
+        return nextId++;
     }
 
     public static void deregisterObject(Object object) {
-        if (registeredObjects.remove(object.getId()) == null) {
-            Gdx.app.error("ObjectManager", "Unable to deregister '" + object.getId() + "' because no object with that id is currently registered");
-        } else {
-            Gdx.app.debug("ObjectManager", "Deregistered object: " + object.getId());
-        }
+        registeredObjects.remove(object.getId());
     }
 
     public static void deregisterAllObjects() {

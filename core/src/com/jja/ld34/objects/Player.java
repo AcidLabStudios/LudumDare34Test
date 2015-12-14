@@ -4,23 +4,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
 import com.jja.ld34.scenes.Hud;
 import com.jja.ld34.Trait;
-import com.jja.ld34.scenes.Hud;
-import com.jja.ld34.screens.PlayScreen;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class Player extends Entity implements InteractiveEntity{
+public class Player extends Entity implements InteractiveObject {
 
     private static final int SPRITE_SIZE = 32;  // in px
     private static final float BASE_SIZE = 32f;
@@ -28,7 +26,8 @@ public class Player extends Entity implements InteractiveEntity{
 
     public enum State {
         IDLING,
-        MOVING
+        MOVING,
+        DYING
     }
 
     private enum Direction {
@@ -49,14 +48,22 @@ public class Player extends Entity implements InteractiveEntity{
     private float animationTimer;
     private List<Trait> currentTraits;
 
-    public Player(String uniqueName, World world, Vector2 initialPosition) {
-        super(uniqueName, world, initialPosition, new Vector2(BASE_SIZE, BASE_SIZE), FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, new Texture("bernie/bernie.png"));
+    public Player(World world, Vector2 initialPosition) {
+        super(world, initialPosition, new Vector2(BASE_SIZE, BASE_SIZE), FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, new Texture("bernie/bernie.png"));
 
         this.currentDirection = this.previousDirection = Direction.DOWN;
         this.currentState = this.previousState = State.IDLING;
         this.animationTimer = 0;
-        this.currentTraits = Trait.getRandomTraits(1);  // TODO: more traits per level?
+        this.currentTraits = Trait.getRandomTraits(4);  // TODO: more traits per level?
         Hud.traitDescription = Arrays.asList(this.currentTraits).toString().replaceAll("[\\[\\]]", "").replace(", ", "") + "BERN";
+
+        if (currentTraits.contains(Trait.NAKED)) {
+            setTexture(new Texture("bernie/bernie_naked.png"));
+        } else if (currentTraits.contains(Trait.REDTIE)) {
+            setTexture(new Texture("bernie/bernie_redtie.png"));
+        } else if (currentTraits.contains(Trait.COLONEL)) {
+            setTexture(new Texture("bernie/bernie_colonel.png"));
+        }
 
         // setup idling texture regions
         this.idlingTextureRegionMap = new HashMap<Direction, TextureRegion>(4);
@@ -93,16 +100,32 @@ public class Player extends Entity implements InteractiveEntity{
     }
 
     public int getUpKey() {
-        return Input.Keys.UP;
+        if (currentTraits.contains(Trait.REVERSE)) {
+            return Input.Keys.DOWN;
+        } else {
+            return Input.Keys.UP;
+        }
     }
     public int getDownKey() {
-        return Input.Keys.DOWN;
+        if (currentTraits.contains(Trait.REVERSE)) {
+            return Input.Keys.UP;
+        } else {
+            return Input.Keys.DOWN;
+        }
     }
     public int getLeftKey() {
-        return Input.Keys.LEFT;
+        if (currentTraits.contains(Trait.REVERSE)) {
+            return Input.Keys.RIGHT;
+        } else {
+            return Input.Keys.LEFT;
+        }
     }
     public int getRightKey() {
-        return Input.Keys.RIGHT;
+        if (currentTraits.contains(Trait.REVERSE)) {
+            return Input.Keys.LEFT;
+        } else {
+            return Input.Keys.RIGHT;
+        }
     }
 
     public float getSize() {
@@ -137,6 +160,11 @@ public class Player extends Entity implements InteractiveEntity{
     }
 
     public void handleInput() {
+        if (this.currentState == State.DYING) {
+            this.body.applyLinearImpulse(new Vector2(getFriction(true), getFriction(false)), this.body.getWorldCenter(), true);
+            return;
+        }
+
         if (Gdx.input.isKeyJustPressed(getUpKey())) {
             this.body.applyLinearImpulse(new Vector2(getFriction(true), getMovementSpeed()), this.body.getWorldCenter(), true);
 
@@ -220,8 +248,37 @@ public class Player extends Entity implements InteractiveEntity{
     }
 
     public void kill() {
-        this.shouldDestroy = true;
-        Hud.timeLeft = 0;
+        if (this.currentState == State.DYING) {
+            return; // you can't die twice, bitch
+        }
+
+        this.currentState = State.DYING;
+
+        final Timer fadeOutDeathTimer = new Timer();
+        fadeOutDeathTimer.scheduleTask(new Timer.Task() {
+            private float lastAlpha = 1f;
+
+            @Override
+            public void run() {
+                if (isDestroyed()) {
+                    fadeOutDeathTimer.clear();
+                    return;
+                }
+
+                if (lastAlpha <= 0) {
+                    fadeOutDeathTimer.clear();
+                    Hud.timeLeft = 0;
+                    shouldDestroy = true;
+                } else {
+                    lastAlpha = Math.max(0, lastAlpha - 0.2f);
+                    setAlpha(lastAlpha);
+                }
+            }
+        }, 0.1f, 0.1f);
+    }
+
+    public boolean isDying() {
+        return (this.currentState == State.DYING);
     }
 
     public Vector2 getPosition() {
@@ -230,7 +287,6 @@ public class Player extends Entity implements InteractiveEntity{
 
     @Override
     public void onCollision(short collidingFixtureFilterCategoryBits) {
-        Gdx.app.error("Player", "On collision invoked!");
         if (!FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.ENVIRONMENT_BIT) && 
                 !FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.PROTAGONIST_BIT) && 
                 !FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.COLLECTIBLES_BIT)) {

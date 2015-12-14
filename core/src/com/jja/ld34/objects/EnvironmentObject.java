@@ -9,12 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class EnvironmentObject implements Object {
 
-    private static int nextId = 0;
-    private static String getNextId() {
-        return String.valueOf(nextId++);
-    }
-
-    protected String id;
+    protected Long id;
     protected World world;
     protected Body body;
     protected Rectangle bounds;
@@ -23,7 +18,6 @@ public class EnvironmentObject implements Object {
     protected boolean destroyed;
 
     public EnvironmentObject(World world, Rectangle bounds) {
-        this.id = getNextId();
         this.world = world;
         this.bounds = bounds;
         this.shouldDestroy = this.destroyed = false;
@@ -42,11 +36,11 @@ public class EnvironmentObject implements Object {
         fixtureDef.shape = shape;
         this.body.createFixture(fixtureDef).setUserData(this);
 
-        ObjectManager.registerObject(this);
+        this.id = ObjectManager.registerObject(this);
     }
 
     @Override
-    public String getId() {
+    public Long getId() {
         return this.id;
     }
 

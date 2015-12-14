@@ -1,6 +1,5 @@
 package com.jja.ld34.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -10,7 +9,7 @@ import com.jja.ld34.Ld34Game;
 /**
  * Created by andrewstrauch on 12/13/15.
  */
-public class TurretBullet extends Entity implements InteractiveEntity{
+public class TurretBullet extends Entity implements InteractiveObject {
     public static final float _width = 16f; //float specifies pixels
     public static final float _height = 16f;
 
@@ -19,8 +18,8 @@ public class TurretBullet extends Entity implements InteractiveEntity{
     private Direction previousDirection;
     private State previousState;
     
-    public TurretBullet(String uniqueName, World world, Vector2 initialPosition, Vector2 fireDirection, Texture texture) {
-        super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.PROJECTILE_BIT, (short) (FixtureFilterBit.ALL_FLAGS & ~FixtureFilterBit.TURRET_BIT & ~FixtureFilterBit.PROJECTILE_BIT), texture);
+    public TurretBullet(World world, Vector2 initialPosition, Vector2 fireDirection, Texture texture) {
+        super(world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.PROJECTILE_BIT, (short) (FixtureFilterBit.ALL_FLAGS & ~FixtureFilterBit.TURRET_BIT & ~FixtureFilterBit.PROJECTILE_BIT), texture);
 
         this.body.applyLinearImpulse(fireDirection, this.body.getWorldCenter(), true);
         this.currentDirection = Direction.LEFT;

@@ -14,15 +14,14 @@ public class ExitPart extends CollectibleEntity {
 
     public static final float SIZE = 32f;
 
-    public ExitPart(String uniqueName, World world, Vector2 initialPosition) {
-        super(uniqueName, world, initialPosition, SIZE, new Texture("battery/battery.png"));
+    public ExitPart(World world, Vector2 initialPosition) {
+        super(world, initialPosition, SIZE, new Texture("battery/battery.png"));
     }
 
     @Override
     public void onCollected() {
         //Increment to a count somewhere else keeping track of pieces gathered for that level,
         //and also update the display in the HUD to reflect the change.
-        Gdx.app.error("ExitPart", "Collected " + this.id);
         Hud.exitPartsCount ++;
     }
 

@@ -12,17 +12,16 @@ import com.jja.ld34.Ld34Game;
 
 public abstract class Entity extends Sprite implements Object {
 
-    protected String id;
+    protected Long id;
     protected World world;
     protected Body body;
 
     protected boolean shouldDestroy;
     protected boolean destroyed;
 
-    public Entity(String id, World world, Vector2 initialPosition, Vector2 initialSize, short filterCategoryBit, short filterMaskBit, Texture initialTexture) {
+    public Entity(World world, Vector2 initialPosition, Vector2 initialSize, short filterCategoryBit, short filterMaskBit, Texture initialTexture) {
         super(initialTexture);
 
-        this.id = id;
         this.world = world;
         this.body = initializeBody(initialPosition, filterCategoryBit, filterMaskBit);
         this.shouldDestroy = this.destroyed = false;
@@ -30,11 +29,11 @@ public abstract class Entity extends Sprite implements Object {
         setBounds(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2, initialSize.x / Ld34Game.PIXELS_PER_METER, initialSize.y / Ld34Game.PIXELS_PER_METER);
         setPosition(this.body.getPosition().x - getWidth() / 2, this.body.getPosition().y - getHeight() / 2);
 
-        ObjectManager.registerObject(this);
+        this.id = ObjectManager.registerObject(this);
     }
 
     @Override
-    public String getId() {
+    public Long getId() {
         return this.id;
     }
 

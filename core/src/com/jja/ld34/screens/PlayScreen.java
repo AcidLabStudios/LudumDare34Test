@@ -4,10 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -42,6 +39,8 @@ public class PlayScreen implements Screen, ContactListener {
     private Player player;
 
     private Timer gameStateTimer;
+    private int numPlayerDeaths;
+    private boolean isGameOver;
 
     public PlayScreen() {
         this.spriteBatch = new SpriteBatch();
@@ -60,14 +59,22 @@ public class PlayScreen implements Screen, ContactListener {
         this.world.setContactListener(this);
         this.debugRenderer = new Box2DDebugRenderer();
 
+        this.numPlayerDeaths = 0;
+        this.isGameOver = false;
+
         populateWorld();
         this.gameStateTimer = new Timer();
         this.gameStateTimer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
+                if (isGameOver) {
+                    return;
+                }
+
                 updateGameState();
             }
         }, 1, 1);
+        setNewTimeLeft();
     }
 
     public void populateWorld() {
@@ -80,11 +87,9 @@ public class PlayScreen implements Screen, ContactListener {
         }
 
         if (this.map.getLayers().get("exitparts") != null) {
-            int exitPartsCount = 0;
             for (MapObject object : this.map.getLayers().get("exitparts").getObjects()) {
                 Rectangle bounds = ((RectangleMapObject) object).getRectangle();
-                new ExitPart("exitPart" + exitPartsCount, this.world, new Vector2(bounds.x, bounds.y));
-                exitPartsCount++;
+                new ExitPart(this.world, new Vector2(bounds.x, bounds.y));
             }
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'exitparts' layer!");
@@ -102,18 +107,17 @@ public class PlayScreen implements Screen, ContactListener {
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'exit' layer!");
         }
-        
-        //spawn turrets
+
         if (this.map.getLayers().get("turretspawn") != null) {
-            int turretCount = 0;
             for (MapObject object : this.map.getLayers().get("turretspawn").getObjects()) {
                 Rectangle bounds = ((RectangleMapObject) object).getRectangle();
-                new Turret("turretspawn" + turretCount, this.world, new Vector2(bounds.x, bounds.y));
-                turretCount++;
+                new Turret(this.world, new Vector2(bounds.x, bounds.y));
             }
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'turretspawn' layer!");
         }
+
+        spawnTrumps();
     }
 
     public void spawnPlayer() {
@@ -121,14 +125,25 @@ public class PlayScreen implements Screen, ContactListener {
             MapObject protagonistSpawnMapObject = this.map.getLayers().get("berniespawn").getObjects().get(0);
             if (protagonistSpawnMapObject != null) {
                 Rectangle bounds = ((RectangleMapObject) protagonistSpawnMapObject).getRectangle();
-                this.player = new Player("player", this.world, new Vector2(bounds.x, bounds.y));
+                this.player = new Player(this.world, new Vector2(bounds.x, bounds.y));
             } else {
-                this.player = new Player("player", this.world, new Vector2(0, 0));
+                this.player = new Player(this.world, new Vector2(0, 0));
                 Gdx.app.error("PlayScreen", "Unable to find spawnpoint for player in 'berniespawn' layer of map! Fell back to spawning at (0, 0).");
             }
         } else {
-            this.player = new Player("player", this.world, new Vector2(0, 0));
+            this.player = new Player(this.world, new Vector2(0, 0));
             Gdx.app.error("PlayScreen", "Map has no 'berniespawn' layer! Fell back to spawning at (0, 0).");
+        }
+    }
+
+    public void spawnTrumps() {
+        if (this.map.getLayers().get("trumpspawn") != null) {
+            for (MapObject object : this.map.getLayers().get("trumpspawn").getObjects()) {
+                Rectangle bounds = ((RectangleMapObject) object).getRectangle();
+                new TrumpClone(this.world, new Vector2(bounds.x, bounds.y));
+            }
+        } else {
+            Gdx.app.error("PlayScreen", "Map has no 'trumpspawn' layer!");
         }
     }
 
@@ -139,17 +154,36 @@ public class PlayScreen implements Screen, ContactListener {
     }
 
     public void updateGameState() {
+        // continue counting down time left
         if (Hud.timeLeft > 0) {
             Hud.timeLeft--;
-        } else {
-            this.player.kill();
         }
 
-        if (this.player.isDestroyed()) {
-            // if there isn't currently a player on the field and there's still time on the clock, spawn a new player
-            spawnPlayer();
-            Hud.timeLeft = 20;
+        if (Hud.timeLeft == 0) {    // respawn condition
+            if (this.player != null && !this.player.isDying()) {
+                this.player.kill();
+            }
         }
+
+        if (this.player != null && this.player.isDestroyed()) {
+            this.numPlayerDeaths++;
+            if (setNewTimeLeft() == 0) {
+                // GAME OVER BITCH
+                // TODO: restart the current level
+                Gdx.app.error("PlayScreen", "GAME OVER");
+                isGameOver = true;
+            } else {
+                // if there isn't currently a player on the field and there's still time on the clock, spawn a new player
+                spawnPlayer();
+                spawnTrumps();  // also respawn all trumps
+            }
+        }
+    }
+
+    public int setNewTimeLeft() {
+        int newTimeLeft = Math.max(((int) (60f / (this.numPlayerDeaths + 1))) - (this.numPlayerDeaths + 1), 0);
+        Hud.timeLeft = newTimeLeft;
+        return newTimeLeft;
     }
 
     public void update(float delta) {
@@ -201,12 +235,12 @@ public class PlayScreen implements Screen, ContactListener {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
 
-        if (fixtureA.getUserData() instanceof InteractiveEntity) {
-            ((InteractiveEntity) fixtureA.getUserData()).onCollision(fixtureB.getFilterData().categoryBits);
+        if (fixtureA.getUserData() instanceof InteractiveObject) {
+            ((InteractiveObject) fixtureA.getUserData()).onCollision(fixtureB.getFilterData().categoryBits);
         }
 
-        if (fixtureB.getUserData() instanceof InteractiveEntity) {
-            ((InteractiveEntity) fixtureB.getUserData()).onCollision(fixtureA.getFilterData().categoryBits);
+        if (fixtureB.getUserData() instanceof InteractiveObject) {
+            ((InteractiveObject) fixtureB.getUserData()).onCollision(fixtureA.getFilterData().categoryBits);
         }
     }
 
@@ -232,22 +266,18 @@ public class PlayScreen implements Screen, ContactListener {
 
     @Override
     public void pause() {
-        this.gameStateTimer.stop();
     }
 
     @Override
     public void resume() {
-        this.gameStateTimer.start();
     }
 
     @Override
     public void hide() {
-        this.gameStateTimer.stop();
     }
 
     @Override
     public void show() {
-        this.gameStateTimer.start();
     }
 
     @Override
