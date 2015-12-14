@@ -42,7 +42,7 @@ public class PlayScreen implements Screen, ContactListener {
     private int numPlayerDeaths;
     private boolean isGameOver;
     
-    private Integer currentLevel = 1;
+    public static Integer currentLevel = 1;
 
     public PlayScreen() {
         this.spriteBatch = new SpriteBatch();
@@ -51,10 +51,8 @@ public class PlayScreen implements Screen, ContactListener {
         this.viewport = new FitViewport(Ld34Game.GAME_WIDTH / Ld34Game.PIXELS_PER_METER, Ld34Game.GAME_HEIGHT / Ld34Game.PIXELS_PER_METER, this.camera);
 
         this.hud = new Hud(this.spriteBatch);
-
-        this.mapLoader = new TmxMapLoader();
+        
         loadMyMap("1-1.tmx");
-        this.mapRenderer = new OrthogonalTiledMapRenderer(this.map, 1 / Ld34Game.PIXELS_PER_METER);
         this.camera.position.set(this.viewport.getWorldWidth() / 2, this.viewport.getWorldHeight() / 2, 0);
 
         this.world = new World(new Vector2(0, 0), true);
@@ -80,7 +78,9 @@ public class PlayScreen implements Screen, ContactListener {
     }
     
     public void loadMyMap(String myMap) {
+        this.mapLoader = new TmxMapLoader();
         this.map = this.mapLoader.load(myMap);
+        this.mapRenderer = new OrthogonalTiledMapRenderer(this.map, 1 / Ld34Game.PIXELS_PER_METER);
     }
 
     public void populateWorld() {
@@ -104,20 +104,31 @@ public class PlayScreen implements Screen, ContactListener {
         spawnPlayer();
 
         if (this.map.getLayers().get("exit") != null) {
+            for (MapObject object : this.map.getLayers().get("exit").getObjects()) {
+                Rectangle bounds = ((RectangleMapObject) object).getRectangle();
+                new ExitPortal(this.world, new Vector2(bounds.x+ 15, bounds.y));
+            }
+        } else {
+            Gdx.app.error("PlayScreen", "Map has no 'exit' layer!");
+        }
+        
+        
+        /*if (this.map.getLayers().get("exit") != null) {
             MapObject exitSpawnMapObject = this.map.getLayers().get("exit").getObjects().get(0);
             if (exitSpawnMapObject != null) {
                 new ExitPortal(this.world, ((RectangleMapObject) exitSpawnMapObject).getRectangle());
+                Gdx.app.error("PlayScreen", "Exit Spawned!");
             } else {
                 Gdx.app.error("PlayScreen", "Unable to find exit in 'exit' layer of map! No exit was spawned; there is no exit to this map.");
             }
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'exit' layer!");
-        }
+        }*/
 
         if (this.map.getLayers().get("turretspawn") != null) {
             for (MapObject object : this.map.getLayers().get("turretspawn").getObjects()) {
                 Rectangle bounds = ((RectangleMapObject) object).getRectangle();
-                new Turret(this.world, new Vector2(bounds.x, bounds.y));
+                new Turret(this.world, new Vector2(bounds.x, bounds.y), currentLevel);
             }
         } else {
             Gdx.app.error("PlayScreen", "Map has no 'turretspawn' layer!");
@@ -190,14 +201,17 @@ public class PlayScreen implements Screen, ContactListener {
             ObjectManager.deregisterAllObjects();
             ExitPortal.hasBeenActivated = false;
             currentLevel++;
+            this.map.dispose();
             if(currentLevel == 2){
                 loadMyMap("1-2.tmx");
             } else if (currentLevel == 3){
                 loadMyMap("1-3.tmx");
+            } else if (currentLevel == 4){
+                loadMyMap("1-4.tmx");
             }
             populateWorld();
             numPlayerDeaths = 0;
-            Hud.exitPartsCount = 0;
+            Hud.exitPartsCount = 5;
             setNewTimeLeft();
             isGameOver = false;
         }

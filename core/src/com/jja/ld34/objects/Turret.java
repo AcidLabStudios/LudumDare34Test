@@ -1,11 +1,13 @@
 package com.jja.ld34.objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Timer;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
+import com.jja.ld34.screens.PlayScreen;
 
 public class Turret extends Entity {
 
@@ -21,7 +23,9 @@ public class Turret extends Entity {
     private Integer bulletOffsetX = 10;
     private Integer bulletOffsetY = 30;
     
-    public Turret (World world, Vector2 initialPosition) {
+    public Integer _turretLevel;
+    
+    public Turret (World world, Vector2 initialPosition, Integer level) {
         super(world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.TURRET_BIT, (short) (FixtureFilterBit.ALL_FLAGS & ~FixtureFilterBit.PROJECTILE_BIT), new Texture("turret/turret.png"));
 
         this.gameStateTimer = new Timer();
@@ -34,16 +38,35 @@ public class Turret extends Entity {
         //Probably make him a solid object like terrain.
 
         _initialPosition = initialPosition;
+        _turretLevel = level;
+    }
+
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+        
+        if (ExitPortal.hasBeenActivated){
+            //shouldDestroy = true;
+            destroy();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        this.world.destroyBody(this.body);
+        destroyed = true;
+        ObjectManager.deregisterObject(this);
     }
     
     public void fireBullet() {
         //Fire a bullet based on fireDirection
 
-        //_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY
-        new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(-bulletSpeed, 0), bulletTexture); //left
-        new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(bulletSpeed, 0), bulletTexture); //right
-        new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(0, bulletSpeed), bulletTexture); //up
-        new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(0, -bulletSpeed), bulletTexture); //down
+        if(_turretLevel == PlayScreen.currentLevel){
+            new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(-bulletSpeed, 0), bulletTexture); //left
+            new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(bulletSpeed, 0), bulletTexture); //right
+            new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(0, bulletSpeed), bulletTexture); //up
+            new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(0, -bulletSpeed), bulletTexture); //down
+        }
         
         /*String localFireDirection;
         if(fireDirection == "LEFT") {

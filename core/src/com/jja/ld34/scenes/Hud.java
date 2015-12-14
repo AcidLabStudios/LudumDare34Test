@@ -17,7 +17,7 @@ import com.jja.ld34.Ld34Game;
 public class Hud implements Disposable {
 
     public static Integer timeLeft = 0;
-    public static Integer exitPartsCount = 0;
+    public static Integer exitPartsCount = 5;
     public static String traitDescription = "";
 
     private Stage stage;
