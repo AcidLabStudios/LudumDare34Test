@@ -16,8 +16,9 @@ public class Turret extends Entity {
     private Timer gameStateTimer;
     private Vector2 _initialPosition;
     
-    private Texture myTexture = new Texture("battery/battery.png");
+    private Texture bulletTexture = new Texture("turret_bullet/energy_ball.png");
     public static int bulletsFired = 0;
+    private static final float bulletSpeed = 2f;
     
     public Turret (String uniqueName, World world, Vector2 initialPosition) {
         super(uniqueName, world, initialPosition, new Vector2(_width, _height), FixtureFilterBit.TURRET_BIT, (short) (FixtureFilterBit.ALL_FLAGS & ~FixtureFilterBit.PROJECTILE_BIT), new Texture("turret/turret.png"));
@@ -28,7 +29,7 @@ public class Turret extends Entity {
             public void run() {
                 fireBullet();
             }
-        }, 2, 2);
+        }, 3, 3);
         //Probably make him a solid object like terrain.
 
         _initialPosition = initialPosition;
@@ -36,20 +37,31 @@ public class Turret extends Entity {
     
     public void fireBullet() {
         //Fire a bullet based on fireDirection
-        String localFireDirection;
+
+        
+        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), new Vector2(-bulletSpeed, 0), bulletTexture); //left
+        bulletsFired ++;
+        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), new Vector2(bulletSpeed, 0), bulletTexture); //right
+        bulletsFired ++;
+        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), new Vector2(0, bulletSpeed), bulletTexture); //up
+        bulletsFired ++;
+        new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), new Vector2(0, -bulletSpeed), bulletTexture); //down
+        bulletsFired ++;
+        
+        /*String localFireDirection;
         if(fireDirection == "LEFT") {
             //Spawn bullet and pass in "LEFT"
-            new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), "LEFT", myTexture);
+            new TurretBullet("turretbullet" + bulletsFired, this.world, new Vector2(_initialPosition), "LEFT", bulletTexture);
             bulletsFired ++;
-        } else if(fireDirection == "RIGHT"){
+        } if(fireDirection == "RIGHT"){
             
-        } else if(fireDirection == "UP") {
+        } if(fireDirection == "UP") {
             
-        } else if (fireDirection == "DOWN"){
+        } if (fireDirection == "DOWN"){
             
         } else {
             //Failed case
-        }
+        }*/
     }
     
     public String getFireDirection() {

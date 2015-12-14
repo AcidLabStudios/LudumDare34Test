@@ -148,7 +148,7 @@ public class PlayScreen implements Screen, ContactListener {
         if (this.player.isDestroyed()) {
             // if there isn't currently a player on the field and there's still time on the clock, spawn a new player
             spawnPlayer();
-            Hud.timeLeft = 5;
+            Hud.timeLeft = 20;
         }
     }
 
