@@ -213,6 +213,7 @@ public class PlayScreen implements Screen, ContactListener {
             } else if (currentLevel == 3){
                 loadMyMap("1-3.tmx");
             } else if (currentLevel == 4){
+                this.backgroundSound.dispose();
                 this.winSound = Gdx.audio.newSound(Gdx.files.internal("startscreen/title.mp3"));
                 this.winSound.play(1.0f);
                 loadMyMap("1-4.tmx");
