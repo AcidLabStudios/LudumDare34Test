@@ -4,22 +4,14 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.jja.ld34.Ld34Game;
-import com.jja.ld34.objects.ObjectManager;
-
-import java.awt.event.InputEvent;
 
 /**
  * Created by andrewstrauch on 12/14/15.
@@ -31,6 +23,7 @@ public class StartScreen implements Screen, ContactListener, InputProcessor {
     private SpriteBatch spriteBatch;
     private Texture splsh;
     private Game myGame;
+    private Sound menuSound;
 
     public StartScreen(Game g) {
         myGame = g;
@@ -43,8 +36,9 @@ public class StartScreen implements Screen, ContactListener, InputProcessor {
         //music = manager.get("feelthebernmetal.mp3", Music.class);
         music.setLooping(true);
         music.play();*/
-        
-        
+
+        menuSound = Gdx.audio.newSound(Gdx.files.internal("startscreen/title.mp3"));
+        menuSound.play(1.0f);
     }
     
     @Override
@@ -82,6 +76,7 @@ public class StartScreen implements Screen, ContactListener, InputProcessor {
         
         
         if (Gdx.input.justTouched()){
+            menuSound.dispose();
             myGame.setScreen(new PlayScreen());
             dispose();
         }

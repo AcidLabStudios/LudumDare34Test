@@ -2,6 +2,7 @@ package com.jja.ld34.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,8 +12,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
-import com.jja.ld34.scenes.Hud;
 import com.jja.ld34.Trait;
+import com.jja.ld34.scenes.Hud;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,6 +48,8 @@ public class Player extends Entity implements InteractiveObject {
     private HashMap<Direction, Animation> movingAnimationMap;
     private float animationTimer;
     private List<Trait> currentTraits;
+    private Sound deathSound;
+    private Sound respawnSound;
 
     public Player(World world, Vector2 initialPosition) {
         super(world, initialPosition, new Vector2(BASE_SIZE, BASE_SIZE), FixtureFilterBit.PROTAGONIST_BIT, FixtureFilterBit.ALL_FLAGS, new Texture("bernie/bernie.png"));
@@ -97,6 +100,10 @@ public class Player extends Entity implements InteractiveObject {
         this.movingAnimationMap.put(Direction.UP, new Animation(getAnimationFramerate(), frames));
 
         setRegion(this.idlingTextureRegionMap.get(this.currentDirection));
+
+        this.deathSound = Gdx.audio.newSound(Gdx.files.internal("bernie/death.mp3"));
+        this.respawnSound = Gdx.audio.newSound(Gdx.files.internal("bernie/respawn.mp3"));
+        this.respawnSound.play(0.5f);
     }
 
     public int getUpKey() {
@@ -253,6 +260,7 @@ public class Player extends Entity implements InteractiveObject {
         }
 
         this.currentState = State.DYING;
+        this.deathSound.play(0.5f);
 
         final Timer fadeOutDeathTimer = new Timer();
         fadeOutDeathTimer.scheduleTask(new Timer.Task() {
@@ -292,5 +300,13 @@ public class Player extends Entity implements InteractiveObject {
                 !FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.COLLECTIBLES_BIT)) {
             kill();
         }
+    }
+
+    @Override
+    public void destroy() {
+        this.deathSound.dispose();
+        this.respawnSound.dispose();
+
+        super.destroy();
     }
 }

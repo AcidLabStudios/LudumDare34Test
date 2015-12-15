@@ -1,7 +1,5 @@
 package com.jja.ld34;
 
-import com.badlogic.gdx.Gdx;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

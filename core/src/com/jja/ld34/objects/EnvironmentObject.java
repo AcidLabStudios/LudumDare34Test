@@ -5,8 +5,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class EnvironmentObject implements Object {
 
     protected Long id;
