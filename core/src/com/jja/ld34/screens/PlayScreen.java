@@ -34,7 +34,7 @@ public class PlayScreen implements Screen, ContactListener {
     private OrthogonalTiledMapRenderer mapRenderer;
 
     private World world;
-    private Box2DDebugRenderer debugRenderer;
+    //private Box2DDebugRenderer debugRenderer;
 
     private Player player;
 
@@ -57,7 +57,7 @@ public class PlayScreen implements Screen, ContactListener {
 
         this.world = new World(new Vector2(0, 0), true);
         this.world.setContactListener(this);
-        this.debugRenderer = new Box2DDebugRenderer();
+        //this.debugRenderer = new Box2DDebugRenderer();
 
         this.numPlayerDeaths = 0;
         this.isGameOver = false;
@@ -211,7 +211,7 @@ public class PlayScreen implements Screen, ContactListener {
             }
             populateWorld();
             numPlayerDeaths = 0;
-            Hud.exitPartsCount = 5;
+            Hud.exitPartsCount = 0;
             setNewTimeLeft();
             isGameOver = false;
         }
@@ -254,7 +254,7 @@ public class PlayScreen implements Screen, ContactListener {
 
         // render debug physics output
         // TODO: remove/comment this before release
-        this.debugRenderer.render(world, camera.combined);
+        //this.debugRenderer.render(world, camera.combined);
 
         // render player
         this.spriteBatch.setProjectionMatrix(camera.combined);
@@ -322,7 +322,7 @@ public class PlayScreen implements Screen, ContactListener {
         this.map.dispose();
         this.mapRenderer.dispose();
         this.world.dispose();
-        this.debugRenderer.dispose();
+        //this.debugRenderer.dispose();
         this.hud.dispose();
     }
 }

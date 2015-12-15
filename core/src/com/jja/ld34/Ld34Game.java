@@ -3,6 +3,7 @@ package com.jja.ld34;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import com.jja.ld34.screens.PlayScreen;
+import com.jja.ld34.screens.StartScreen;
 
 public class Ld34Game extends Game {
 
@@ -14,7 +15,8 @@ public class Ld34Game extends Game {
 
 	@Override
 	public void create() {
-		setCurrentScreen(new PlayScreen());
+		//setCurrentScreen(new PlayScreen());
+        setCurrentScreen(new StartScreen(this));
 	}
 
 	@Override

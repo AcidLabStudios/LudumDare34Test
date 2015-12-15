@@ -34,9 +34,9 @@ public class ExitPortal extends CollectibleEntity  {
     @Override
     public void onCollision(short collidingFixtureFilterCategoryBits) {
         if (FixtureFilterBit.contains(collidingFixtureFilterCategoryBits, FixtureFilterBit.PROTAGONIST_BIT)) {
-            this.shouldDestroy = true;
             if (Hud.exitPartsCount == 5) {
                 //TODO: Actually close the game loop
+                this.shouldDestroy = true;
                 hasBeenActivated = true;
             }
         }

@@ -39,7 +39,7 @@ public class Turret extends Entity {
 
         _initialPosition = initialPosition;
         _turretLevel = level;
-    }
+    }   
 
     @Override
     public void update(float delta) {
