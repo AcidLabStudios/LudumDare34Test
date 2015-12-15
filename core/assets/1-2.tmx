@@ -220,7 +220,11 @@
   <object x="0" y="0"/>
   <object x="753" y="871" width="62" height="47"/>
  </objectgroup>
- <objectgroup name="turretspawn" width="0" height="0"/>
+ <objectgroup name="turretspawn" width="0" height="0">
+  <object x="609" y="161" width="33" height="33"/>
+  <object x="1506" y="670" width="30" height="36"/>
+  <object x="1091" y="1058" width="30" height="33"/>
+ </objectgroup>
  <objectgroup name="trumpspawn" width="0" height="0">
   <object x="128" y="416" width="32" height="32"/>
   <object x="768" y="512" width="32" height="32"/>
