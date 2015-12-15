@@ -1,14 +1,11 @@
 package com.jja.ld34.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
 import com.jja.ld34.scenes.Hud;
-import com.jja.ld34.screens.PlayScreen;
 
 public class ExitPortal extends CollectibleEntity  {
 

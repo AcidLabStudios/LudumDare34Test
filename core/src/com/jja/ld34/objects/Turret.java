@@ -1,6 +1,5 @@
 package com.jja.ld34.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -50,18 +49,11 @@ public class Turret extends Entity {
             destroy();
         }
     }
-
-    @Override
-    public void destroy() {
-        this.world.destroyBody(this.body);
-        destroyed = true;
-        ObjectManager.deregisterObject(this);
-    }
     
     public void fireBullet() {
         //Fire a bullet based on fireDirection
 
-        if(_turretLevel == PlayScreen.currentLevel){
+        if(_turretLevel.equals(PlayScreen.currentLevel)){
             new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(-bulletSpeed, 0), bulletTexture); //left
             new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(bulletSpeed, 0), bulletTexture); //right
             new TurretBullet(this.world, new Vector2(_initialPosition.x  + bulletOffsetX, _initialPosition.y + bulletOffsetY), new Vector2(0, bulletSpeed), bulletTexture); //up

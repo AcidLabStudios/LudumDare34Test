@@ -10,10 +10,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.jja.ld34.FixtureFilterBit;
 import com.jja.ld34.Ld34Game;
-import com.jja.ld34.Trait;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 public class TrumpClone extends Entity implements InteractiveObject {

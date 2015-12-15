@@ -2,6 +2,7 @@ package com.jja.ld34.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,8 +18,8 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jja.ld34.Ld34Game;
-import com.jja.ld34.scenes.Hud;
 import com.jja.ld34.objects.*;
+import com.jja.ld34.scenes.Hud;
 
 public class PlayScreen implements Screen, ContactListener {
 
@@ -43,6 +44,8 @@ public class PlayScreen implements Screen, ContactListener {
     private boolean isGameOver;
     
     public static Integer currentLevel = 1;
+    private Sound winSound;
+    private Sound backgroundSound;
 
     public PlayScreen() {
         this.spriteBatch = new SpriteBatch();
@@ -75,6 +78,9 @@ public class PlayScreen implements Screen, ContactListener {
             }
         }, 1, 1);
         setNewTimeLeft();
+
+        this.backgroundSound = Gdx.audio.newSound(Gdx.files.internal("music.ogg"));
+        this.backgroundSound.loop(0.4f);
     }
     
     public void loadMyMap(String myMap) {
@@ -187,7 +193,7 @@ public class PlayScreen implements Screen, ContactListener {
             if (setNewTimeLeft() == 0) {
                 // GAME OVER BITCH
                 // TODO: restart the current level
-                Gdx.app.error("PlayScreen", "GAME OVER");
+                Gdx.app.error("GAME OVER", "Refresh to try again!");
                 isGameOver = true;
             } else {
                 // if there isn't currently a player on the field and there's still time on the clock, spawn a new player
@@ -207,6 +213,8 @@ public class PlayScreen implements Screen, ContactListener {
             } else if (currentLevel == 3){
                 loadMyMap("1-3.tmx");
             } else if (currentLevel == 4){
+                this.winSound = Gdx.audio.newSound(Gdx.files.internal("startscreen/title.mp3"));
+                this.winSound.play(1.0f);
                 loadMyMap("1-4.tmx");
             }
             populateWorld();
@@ -319,6 +327,8 @@ public class PlayScreen implements Screen, ContactListener {
 
     @Override
     public void dispose() {
+        this.winSound.dispose();
+        this.backgroundSound.dispose();
         this.map.dispose();
         this.mapRenderer.dispose();
         this.world.dispose();

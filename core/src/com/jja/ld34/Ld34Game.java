@@ -2,7 +2,6 @@ package com.jja.ld34;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.jja.ld34.screens.PlayScreen;
 import com.jja.ld34.screens.StartScreen;
 
 public class Ld34Game extends Game {
