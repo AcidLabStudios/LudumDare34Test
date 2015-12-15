@@ -221,9 +221,9 @@
  </layer>
  <objectgroup name="walls" width="0" height="0">
   <object x="352" y="800" width="928" height="32"/>
-  <object x="1248" y="160" width="32" height="640"/>
-  <object x="352" y="160" width="896" height="32"/>
-  <object x="352" y="192" width="32" height="608"/>
+  <object x="352" y="352" width="896" height="32"/>
+  <object x="1248" y="352" width="32" height="448"/>
+  <object x="352" y="384" width="32" height="416"/>
  </objectgroup>
  <objectgroup name="exitparts" width="0" height="0"/>
  <objectgroup name="berniespawn" width="0" height="0">
